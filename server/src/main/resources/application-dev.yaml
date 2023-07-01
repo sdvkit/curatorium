@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    username: sdvkit
+    password: sdvkit-roottoor
+    url: jdbc:postgresql://localhost:5432/curatorium
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    generate-ddl: false
+    hibernate.naming.physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+    properties:
+      hibernate.format_sql: true

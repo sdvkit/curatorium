@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changeset/20230627/20230627_01_create_users_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_02_create_groups_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_03_create_students_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_04_create_subjects_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_05_create_first_lvl_statements_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_06_create_second_lvl_statements_table.sql
+  - include:
+      file: db/changelog/changeset/20230627/20230627_07_create_marks_table.sql

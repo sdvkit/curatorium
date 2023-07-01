@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
+
+* {
+    font-family: 'Rubik', sans-serif;
+}
+
+.p-menu {
+    width: 100%;
+}
+
+.p-breadcrumb {
+    /*width: 100%;*/
+    border-radius: 0;
+    border: 0;
+    margin-left: 20px;
+}
+
+.p-breadcrumb .p-breadcrumb-list li .p-menuitem-link .p-menuitem-icon {
+    /*color: #f7f8fa;*/
+    font-size: 12pt;
+}
+
+.p-breadcrumb .p-breadcrumb-list li .p-menuitem-link .p-menuitem-text {
+    /*color: #f7f8fa;*/
+    font-size: 12pt;
+}
+
+.p-splitter {
+    border-radius: 0;
+}
+
+.p-inputnumber-input {
+    width: 45px;
+}
+
+.p-terminal {
+    background-color: #000000;
+    color: #e1e1e1;
+}
+
+.p-terminal-prompt {
+    color: #409400;
+}
+
+.p-terminal-response {
+    color: #2e67a3;
+}
+
+#password {
+    width: 100%;
+}
+
+#repeat-password {
+    width: 100%;
+}
