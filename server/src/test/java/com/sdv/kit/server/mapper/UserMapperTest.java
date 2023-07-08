@@ -1,9 +1,8 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.UserAccessDto;
-import com.sdv.kit.server.dto.UserDto;
-import com.sdv.kit.server.dto.UserLoginDto;
-import com.sdv.kit.server.dto.UserRegistrationDto;
+import com.sdv.kit.server.dto.user.UserDto;
+import com.sdv.kit.server.dto.user.UserLoginDto;
+import com.sdv.kit.server.dto.user.UserRegistrationDto;
 import com.sdv.kit.server.model.User;
 import com.sdv.kit.server.model.enumerated.UserRole;
 import org.junit.jupiter.api.Test;
@@ -91,26 +90,5 @@ public class UserMapperTest {
         assertEquals(user.getUsername(), actualUserDto.username());
         assertEquals(user.getFullName(), actualUserDto.fullName());
         assertEquals(user.getRole(), actualUserDto.role());
-    }
-
-    @Test
-    void fromAccessDtoToEntityTest() {
-        final UserAccessDto userAccessDto = new UserAccessDto("test_username", UserRole.TEACHER);
-        final User actualUser = USER_MAPPER.toEntity(userAccessDto);
-
-        assertEquals(userAccessDto.username(), actualUser.getUsername());
-        assertEquals(userAccessDto.role(), actualUser.getRole());
-    }
-
-    @Test
-    void fromEntityToAccessDtoTest() {
-        final User user = User.builder()
-                .username("test_username")
-                .role(UserRole.TEACHER)
-                .build();
-        final UserAccessDto actualAccessDto = USER_MAPPER.toAccessDto(user);
-
-        assertEquals(user.getUsername(), actualAccessDto.username());
-        assertEquals(user.getRole(), actualAccessDto.role());
     }
 }

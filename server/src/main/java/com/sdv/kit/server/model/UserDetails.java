@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 @RequiredArgsConstructor
 public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
@@ -13,7 +13,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(user.getRole());
+        return Collections.singleton(user.getRole());
     }
 
     @Override
@@ -43,6 +43,6 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !user.getIsLoggedIn();
     }
 }

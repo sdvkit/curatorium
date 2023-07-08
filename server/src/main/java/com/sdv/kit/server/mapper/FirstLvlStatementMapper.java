@@ -1,7 +1,7 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.FirstLvlStatementCreationDto;
-import com.sdv.kit.server.dto.FirstLvlStatementDto;
+import com.sdv.kit.server.dto.fls.FirstLvlStatementCreationDto;
+import com.sdv.kit.server.dto.fls.FirstLvlStatementDto;
 import com.sdv.kit.server.model.FirstLvlStatement;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -10,6 +10,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 
 @Mapper
 public interface FirstLvlStatementMapper {
+
     FirstLvlStatement toEntity(FirstLvlStatementDto firstLvlStatementDto);
 
     FirstLvlStatementDto toDto(FirstLvlStatement firstLvlStatement);

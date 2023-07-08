@@ -1,4 +1,4 @@
-package com.sdv.kit.server.dto;
+package com.sdv.kit.server.dto.mark;
 
 import com.sdv.kit.server.model.enumerated.MarkType;
 import jakarta.validation.constraints.NotNull;

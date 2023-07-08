@@ -1,4 +1,4 @@
-package com.sdv.kit.server.dto;
+package com.sdv.kit.server.dto.user;
 
 import com.sdv.kit.server.model.enumerated.UserRole;
 import jakarta.validation.constraints.NotNull;

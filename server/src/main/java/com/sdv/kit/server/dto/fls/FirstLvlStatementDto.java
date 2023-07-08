@@ -1,4 +1,4 @@
-package com.sdv.kit.server.dto;
+package com.sdv.kit.server.dto.fls;
 
 import jakarta.validation.constraints.NotNull;
 

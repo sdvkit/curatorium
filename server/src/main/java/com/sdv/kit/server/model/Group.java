@@ -39,6 +39,8 @@ public class Group {
 
     private LocalDate createdAt;
 
+    private Integer groupYear;
+
     private Boolean isArchived;
 
     @Builder.Default

@@ -6,6 +6,7 @@ CREATE TABLE groups (
     user_id BIGINT NOT NULL,
     name VARCHAR(15) NOT NULL,
     created_at DATE NOT NULL,
+    group_year INTEGER NOT NULL,
     is_archived BOOLEAN NOT NULL,
 
     foreign key (user_id) references users(id)

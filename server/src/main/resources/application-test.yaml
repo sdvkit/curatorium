@@ -1,16 +1,20 @@
 spring:
   liquibase.enabled: false
+
   datasource:
       url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1
       username: sa
       password: sa
       driver-class-name: org.h2.Driver
+
   jpa:
     defer-datasource-initialization: true
     generate-ddl: false
     hibernate:
       naming.physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
-    properties:
-      hibernate.format_sql: true
+    properties.hibernate:
+      format_sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+
+jwt.secret: A3S5566B54703343367639792F423F4528482B4D62516C5468576D5A71347437

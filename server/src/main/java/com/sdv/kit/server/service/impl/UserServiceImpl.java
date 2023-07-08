@@ -1,6 +1,6 @@
 package com.sdv.kit.server.service.impl;
 
-import com.sdv.kit.server.dto.UserRegistrationDto;
+import com.sdv.kit.server.dto.user.UserRegistrationDto;
 import com.sdv.kit.server.mapper.UserMapper;
 import com.sdv.kit.server.model.User;
 import com.sdv.kit.server.model.enumerated.UserRole;

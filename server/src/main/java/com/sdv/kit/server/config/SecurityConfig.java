@@ -46,7 +46,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers("/api/v1/groups").hasAnyAuthority(TEACHER.getAuthority(), ADMIN.getAuthority())
+                        .requestMatchers("/api/v1/groups/**").hasAnyAuthority(
+                                ADMIN.getAuthority(), TEACHER.getAuthority())
+                        .requestMatchers("/api/v1/students/**").hasAnyAuthority(
+                                ADMIN.getAuthority(), TEACHER.getAuthority())
                         .anyRequest().authenticated())
                 .sessionManagement(managementConfigurer -> managementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -56,18 +59,20 @@ public class SecurityConfig {
     }
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
     public AuthenticationProvider authenticationProvider() {
         final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider(passwordEncoder());
         authenticationProvider.setUserDetailsService(userDetailsService);
         return authenticationProvider;
     }
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    @SneakyThrows
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) {
+        return authConfig.getAuthenticationManager();
     }
 }
