@@ -1,16 +1,16 @@
 package com.sdv.kit.server.service;
 
-import com.sdv.kit.server.dto.student.StudentCreationDto;
-import com.sdv.kit.server.dto.student.StudentRenameDto;
-import com.sdv.kit.server.model.Student;
+import com.sdv.kit.server.dto.StudentCreationDto;
+import com.sdv.kit.server.dto.StudentDto;
+import com.sdv.kit.server.dto.StudentRenameDto;
 
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface StudentService {
 
-    Optional<Student> save(StudentCreationDto studentCreationDto);
+    CompletableFuture<StudentDto> save(StudentCreationDto studentCreationDto, String username);
 
-    void delete(Long studentId);
+    void delete(Long studentId, String username);
 
-    Optional<Student> rename(Long studentId, StudentRenameDto studentRenameDto);
+    CompletableFuture<StudentDto> rename(Long studentId, StudentRenameDto studentRenameDto, String username);
 }

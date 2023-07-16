@@ -14,9 +14,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "students")
@@ -38,7 +38,7 @@ public class Student {
 
     @Builder.Default
     @OneToMany(mappedBy = "student", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Mark> marks = new ArrayList<>();
+    private Set<Mark> marks = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

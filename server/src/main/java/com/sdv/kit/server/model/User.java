@@ -1,6 +1,5 @@
 package com.sdv.kit.server.model;
 
-import com.sdv.kit.server.model.enumerated.UserRole;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

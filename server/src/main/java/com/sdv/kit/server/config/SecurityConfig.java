@@ -21,8 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.sdv.kit.server.model.enumerated.UserRole.ADMIN;
-import static com.sdv.kit.server.model.enumerated.UserRole.TEACHER;
+import static com.sdv.kit.server.model.UserRole.ADMIN;
+import static com.sdv.kit.server.model.UserRole.TEACHER;
 
 @Configuration
 @EnableWebSecurity
@@ -32,6 +32,8 @@ public class SecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {
             "/api/v1/auth/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
     };
 
     private final UserDetailsService userDetailsService;
@@ -46,10 +48,13 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
                         .requestMatchers(AUTH_WHITELIST).permitAll()
-                        .requestMatchers("/api/v1/groups/**").hasAnyAuthority(
-                                ADMIN.getAuthority(), TEACHER.getAuthority())
-                        .requestMatchers("/api/v1/students/**").hasAnyAuthority(
-                                ADMIN.getAuthority(), TEACHER.getAuthority())
+                        .requestMatchers(
+                                "/api/v1/groups/**",
+                                "/api/v1/students/**",
+                                "/api/v1/subjects/**",
+                                "/api/v1/users/**",
+                                "/api/v1/fls/**")
+                        .hasAnyAuthority(ADMIN.getAuthority(), TEACHER.getAuthority())
                         .anyRequest().authenticated())
                 .sessionManagement(managementConfigurer -> managementConfigurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

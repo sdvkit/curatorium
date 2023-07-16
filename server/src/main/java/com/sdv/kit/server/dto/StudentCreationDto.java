@@ -1,4 +1,4 @@
-package com.sdv.kit.server.dto.student;
+package com.sdv.kit.server.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

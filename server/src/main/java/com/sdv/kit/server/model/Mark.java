@@ -1,6 +1,5 @@
 package com.sdv.kit.server.model;
 
-import com.sdv.kit.server.model.enumerated.MarkType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

@@ -1,8 +1,9 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.user.UserDto;
-import com.sdv.kit.server.dto.user.UserLoginDto;
-import com.sdv.kit.server.dto.user.UserRegistrationDto;
+import com.sdv.kit.server.dto.UserDto;
+import com.sdv.kit.server.dto.UserLoginDto;
+import com.sdv.kit.server.dto.UserRegistrationDto;
+import com.sdv.kit.server.dto.UserRenameDto;
 import com.sdv.kit.server.model.User;
 import org.mapstruct.Mapper;
 
@@ -20,4 +21,8 @@ public interface UserMapper {
     User toEntity(UserDto userDto);
 
     UserDto toDto(User user);
+
+    User toEntity(UserRenameDto userRenameDto);
+
+    UserRenameDto toRenameDto(User user);
 }

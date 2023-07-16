@@ -1,13 +1,16 @@
 package com.sdv.kit.server.controller;
 
-import com.sdv.kit.server.dto.group.GroupCreationDto;
-import com.sdv.kit.server.dto.group.GroupDto;
-import com.sdv.kit.server.dto.group.GroupRenameDto;
+import com.sdv.kit.server.dto.GroupCreationDto;
+import com.sdv.kit.server.dto.GroupDto;
+import com.sdv.kit.server.dto.GroupRenameDto;
 import com.sdv.kit.server.service.GroupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,46 +31,63 @@ public class GroupController {
     private final GroupService groupService;
 
     @GetMapping
-    public ResponseEntity<List<GroupDto>> getUserGroup() {
-        final List<GroupDto> groupDtoList = groupService.findAllByUser();
-        return new ResponseEntity<>(groupDtoList, HttpStatus.OK);
+    @SneakyThrows
+    public ResponseEntity<List<GroupDto>> getUserGroup(Authentication authentication) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(groupService
+                        .findAllByUser(authentication.getName())
+                        .get());
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> addGroup(@RequestBody @Valid GroupCreationDto groupCreationDto,
-                                               BindingResult bindingResult) {
+    @SneakyThrows
+    public ResponseEntity<GroupDto> addGroup(@RequestBody @Valid GroupCreationDto groupCreationDto,
+                                               BindingResult bindingResult,
+                                               Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
 
-        return groupService.save(groupCreationDto).isPresent()
-                ? new ResponseEntity<>(HttpStatus.CREATED)
-                : new ResponseEntity<>(HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(groupService
+                        .save(groupCreationDto, authentication.getName())
+                        .get());
     }
 
     @PatchMapping("/{groupId}")
-    public ResponseEntity<HttpStatus> renameGroup(@PathVariable Long groupId,
+    @SneakyThrows
+    public ResponseEntity<GroupDto> renameGroup(@PathVariable Long groupId,
                                                   @RequestBody @Valid GroupRenameDto groupRenameDto,
-                                                  BindingResult bindingResult) {
+                                                  BindingResult bindingResult,
+                                                  Authentication authentication) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
-        return groupService.rename(groupId, groupRenameDto).isPresent()
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(groupService
+                        .rename(groupId, groupRenameDto, authentication.getName())
+                        .get());
     }
 
     @DeleteMapping("/{groupId}")
-    public ResponseEntity<HttpStatus> deleteGroup(@PathVariable Long groupId) {
-        groupService.delete(groupId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<HttpStatus> deleteGroup(@PathVariable Long groupId,
+                                                  Authentication authentication) {
+        groupService.delete(groupId, authentication.getName());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
     @PatchMapping("/archive/{groupId}")
-    public ResponseEntity<HttpStatus> archiveGroup(@PathVariable Long groupId) {
-        return groupService.archive(groupId).isPresent()
-                ? new ResponseEntity<>(HttpStatus.OK)
-                : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+    @SneakyThrows
+    public ResponseEntity<GroupDto> archiveGroup(@PathVariable Long groupId,
+                                                   Authentication authentication) {
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(groupService
+                        .archive(groupId, authentication.getName())
+                        .get());
     }
 }

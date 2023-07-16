@@ -14,28 +14,23 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+
+    private static final Long EXPIRATION = 1000 * 60 * 60 * 30L;
 
     @Value("${jwt.secret}")
     public String secretKey;
 
     @Override
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+        return extractAllClaims(token).getSubject();
     }
 
     @Override
     public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    @Override
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
+        return extractAllClaims(token).getExpiration();
     }
 
     @Override
@@ -59,18 +54,18 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(String userName) {
+    public String generateToken(String username) {
         final Map<String,Object> claims = new HashMap<>();
-        return createToken(claims, userName);
+        return createToken(claims, username);
     }
 
     @Override
-    public String createToken(Map<String, Object> claims, String userName) {
+    public String createToken(Map<String, Object> claims, String username) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userName)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*30))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

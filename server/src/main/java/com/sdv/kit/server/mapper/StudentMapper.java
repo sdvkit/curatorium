@@ -1,8 +1,8 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.student.StudentCreationDto;
-import com.sdv.kit.server.dto.student.StudentDto;
-import com.sdv.kit.server.dto.student.StudentRenameDto;
+import com.sdv.kit.server.dto.StudentCreationDto;
+import com.sdv.kit.server.dto.StudentDto;
+import com.sdv.kit.server.dto.StudentRenameDto;
 import com.sdv.kit.server.model.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

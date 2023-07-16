@@ -1,4 +1,4 @@
-package com.sdv.kit.server.model.enumerated;
+package com.sdv.kit.server.model;
 
 import org.springframework.security.core.GrantedAuthority;
 

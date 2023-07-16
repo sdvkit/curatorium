@@ -1,18 +1,30 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.mark.MarkCreationDto;
-import com.sdv.kit.server.dto.mark.MarkDto;
+import com.sdv.kit.server.dto.MarkCreationDto;
+import com.sdv.kit.server.dto.MarkDto;
+import com.sdv.kit.server.dto.MarkEditDto;
 import com.sdv.kit.server.model.Mark;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(uses = {SecondLvlStatementMapper.class, StudentMapper.class})
 public interface MarkMapper {
 
     Mark toEntity(MarkDto markDto);
 
     MarkDto toDto(Mark mark);
 
+    @Mapping(source = "secondLvlStatementId", target = "secondLvlStatement.id")
+    @Mapping(source = "studentId", target = "student.id")
+    @Mapping(target = "markType", ignore = true)
     Mark toEntity(MarkCreationDto markCreationDto);
 
+    @Mapping(source = "secondLvlStatement.id", target = "secondLvlStatementId")
+    @Mapping(source = "student.id", target = "studentId")
+    @Mapping(target = "markType", ignore = true)
     MarkCreationDto toCreationDto(Mark mark);
+
+    Mark toEntity(MarkEditDto markEditDto);
+
+    MarkEditDto toEditDto(Mark mark);
 }

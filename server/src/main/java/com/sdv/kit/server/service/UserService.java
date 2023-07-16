@@ -1,11 +1,14 @@
 package com.sdv.kit.server.service;
 
-import com.sdv.kit.server.dto.user.UserRegistrationDto;
-import com.sdv.kit.server.model.User;
+import com.sdv.kit.server.dto.UserDto;
+import com.sdv.kit.server.dto.UserRegistrationDto;
+import com.sdv.kit.server.dto.UserRenameDto;
 
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface UserService {
 
-    Optional<User> register(UserRegistrationDto userRegistrationDto);
+    CompletableFuture<UserDto> register(UserRegistrationDto userRegistrationDto);
+
+    CompletableFuture<UserDto> rename(String username, UserRenameDto userRenameDto);
 }

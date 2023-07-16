@@ -1,8 +1,8 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.group.GroupCreationDto;
-import com.sdv.kit.server.dto.group.GroupDto;
-import com.sdv.kit.server.dto.group.GroupRenameDto;
+import com.sdv.kit.server.dto.GroupCreationDto;
+import com.sdv.kit.server.dto.GroupDto;
+import com.sdv.kit.server.dto.GroupRenameDto;
 import com.sdv.kit.server.model.Group;
 import org.mapstruct.Mapper;
 

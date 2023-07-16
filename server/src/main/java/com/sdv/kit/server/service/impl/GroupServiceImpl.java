@@ -1,9 +1,8 @@
 package com.sdv.kit.server.service.impl;
 
-import com.sdv.kit.server.dto.group.GroupCreationDto;
-import com.sdv.kit.server.dto.group.GroupDto;
-import com.sdv.kit.server.dto.group.GroupRenameDto;
-import com.sdv.kit.server.facade.AuthFacade;
+import com.sdv.kit.server.dto.GroupCreationDto;
+import com.sdv.kit.server.dto.GroupDto;
+import com.sdv.kit.server.dto.GroupRenameDto;
 import com.sdv.kit.server.mapper.GroupMapper;
 import com.sdv.kit.server.model.Group;
 import com.sdv.kit.server.model.User;
@@ -14,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,66 +36,75 @@ public class GroupServiceImpl implements GroupService {
 
     private final UserRepository userRepository;
 
-    private final AuthFacade authFacade;
-
+    @Async
     @Override
-    public List<GroupDto> findAllByUser() {
-        return groupRepository.findAllByUser(authFacade.getName()).stream()
+    public CompletableFuture<List<GroupDto>> findAllByUser(String username) {
+        return CompletableFuture.completedFuture(groupRepository
+                .findAllByUser(username)
+                .stream()
                 .map(GROUP_MAPPER::toDto)
-                .toList();
+                .toList());
     }
 
+    @Async
     @Transactional
-    @CachePut(value = "groups")
+    @Cacheable(value = "groups")
     @Override
-    public Optional<Group> save(GroupCreationDto groupCreationDto) {
-        groupRepository.findExistsGroup(groupCreationDto.name(), groupCreationDto.groupYear(), authFacade.getName())
+    public CompletableFuture<GroupDto> save(GroupCreationDto groupCreationDto, String username) {
+        groupRepository.findExistsGroup(groupCreationDto.name(), groupCreationDto.groupYear(), username)
                 .ifPresent(group -> {
-                    final String message = String.format("Group with name %s and year %d already exists.",
-                            groupCreationDto.name(), groupCreationDto.groupYear());
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, message);
+                    throw new ResponseStatusException(HttpStatus.CONFLICT);
                 });
 
-        final User user = userRepository.findByUsername(authFacade.getName())
+        final User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("There's no user with this username"));
 
         final Group group = GROUP_MAPPER.toEntity(groupCreationDto);
         group.setUser(user);
         group.setIsArchived(false);
         group.setCreatedAt(LocalDate.now());
-        return Optional.of(groupRepository.save(group));
+
+        final GroupDto savedGroupDto = GROUP_MAPPER.toDto(groupRepository.save(group));
+        return CompletableFuture.completedFuture(savedGroupDto);
     }
 
+    @Async
     @Transactional
     @CachePut(value = "groups")
     @Override
-    public Optional<Group> rename(Long groupId, GroupRenameDto groupRenameDto) {
-        final Group group = groupRepository.findByIdAndUser(groupId, authFacade.getName())
+    public CompletableFuture<GroupDto> rename(Long groupId, GroupRenameDto groupRenameDto, String username) {
+        final Group group = groupRepository.findByIdAndUser(groupId, username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         group.setName(groupRenameDto.name());
-        return Optional.of(groupRepository.save(group));
+
+        final GroupDto renamedGroupDto = GROUP_MAPPER.toDto(groupRepository.save(group));
+        return CompletableFuture.completedFuture(renamedGroupDto);
     }
 
+    @Async
     @Transactional
     @CacheEvict(value = "groups")
     @Override
-    public void delete(Long groupId) {
-        final Group group = groupRepository.findByIdAndUser(groupId, authFacade.getName())
+    public void delete(Long groupId, String username) {
+        final Group group = groupRepository.findByIdAndUser(groupId, username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         groupRepository.delete(group);
     }
 
+    @Async
     @Transactional
     @CachePut(value = "groups")
     @Override
-    public Optional<Group> archive(Long groupId) {
-        final Group group = groupRepository.findByIdAndUser(groupId, authFacade.getName())
+    public CompletableFuture<GroupDto> archive(Long groupId, String username) {
+        final Group group = groupRepository.findByIdAndUser(groupId, username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
         final boolean isArchived = group.getIsArchived();
         group.setIsArchived(!isArchived);
-        return Optional.of(groupRepository.save(group));
+
+        final GroupDto archivedGroupDto = GROUP_MAPPER.toDto(groupRepository.save(group));
+        return CompletableFuture.completedFuture(archivedGroupDto);
     }
 }

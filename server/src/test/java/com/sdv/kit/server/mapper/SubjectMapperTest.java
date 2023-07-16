@@ -1,7 +1,7 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.subject.SubjectCreationDto;
-import com.sdv.kit.server.dto.subject.SubjectDto;
+import com.sdv.kit.server.dto.SubjectCreationDto;
+import com.sdv.kit.server.dto.SubjectDto;
 import com.sdv.kit.server.model.Subject;
 import com.sdv.kit.server.model.User;
 import org.junit.jupiter.api.Test;

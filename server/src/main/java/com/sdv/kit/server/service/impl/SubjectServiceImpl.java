@@ -1,8 +1,8 @@
 package com.sdv.kit.server.service.impl;
 
-import com.sdv.kit.server.dto.subject.SubjectCreationDto;
-import com.sdv.kit.server.dto.subject.SubjectDto;
-import com.sdv.kit.server.facade.AuthFacade;
+import com.sdv.kit.server.dto.SubjectCreationDto;
+import com.sdv.kit.server.dto.SubjectDto;
+import com.sdv.kit.server.dto.SubjectRenameDto;
 import com.sdv.kit.server.mapper.SubjectMapper;
 import com.sdv.kit.server.model.Subject;
 import com.sdv.kit.server.model.User;
@@ -11,15 +11,18 @@ import com.sdv.kit.server.repository.UserRepository;
 import com.sdv.kit.server.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Transactional(readOnly = true)
@@ -32,30 +35,58 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final UserRepository userRepository;
 
-    private final AuthFacade authFacade;
-
+    @Async
     @Transactional
     @Cacheable(value = "subjects")
     @Override
-    public Optional<Subject> save(SubjectCreationDto subjectCreationDto) {
-        subjectRepository.findExistsSubject(subjectCreationDto.name(), authFacade.getName())
+    public CompletableFuture<SubjectDto> save(SubjectCreationDto subjectCreationDto, String username) {
+        subjectRepository.findExistsSubject(subjectCreationDto.name(), username)
                 .ifPresent(subject -> {
-                    final String message = String.format("Subject with name %s already exists.", subjectCreationDto.name());
-                    throw new ResponseStatusException(HttpStatus.CONFLICT, message);
+                    throw new ResponseStatusException(HttpStatus.CONFLICT);
                 });
 
-        final User user = userRepository.findByUsername(authFacade.getName())
+        final User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("There's no user with this username"));
 
         final Subject subject = SUBJECT_MAPPER.toEntity(subjectCreationDto);
         subject.setUser(user);
-        return Optional.of(subjectRepository.save(subject));
+
+        final SubjectDto savedSubjectDto = SUBJECT_MAPPER.toDto(subjectRepository.save(subject));
+        return CompletableFuture.completedFuture(savedSubjectDto);
     }
 
+    @Async
     @Override
-    public List<SubjectDto> findAllByUser() {
-        return subjectRepository.findAllByUser(authFacade.getName()).stream()
+    public CompletableFuture<List<SubjectDto>> findAllByUser(String username) {
+        return CompletableFuture.completedFuture(subjectRepository
+                .findAllByUser(username)
+                .stream()
                 .map(SUBJECT_MAPPER::toDto)
-                .toList();
+                .toList());
+    }
+
+    @Async
+    @CachePut(value = "subjects")
+    @Transactional
+    @Override
+    public CompletableFuture<SubjectDto> rename(Long subjectId, SubjectRenameDto subjectRenameDto, String username) {
+        final Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        subject.setName(subjectRenameDto.name());
+
+        final SubjectDto renamedSubjectDto = SUBJECT_MAPPER.toDto(subjectRepository.save(subject));
+        return CompletableFuture.completedFuture(renamedSubjectDto);
+    }
+
+    @Async
+    @CacheEvict(value = "subjects")
+    @Transactional
+    @Override
+    public void delete(Long subjectId, String name) {
+        final Subject subject = subjectRepository.findById(subjectId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        subjectRepository.delete(subject);
     }
 }

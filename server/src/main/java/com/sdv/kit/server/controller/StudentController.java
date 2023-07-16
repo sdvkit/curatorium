@@ -1,9 +1,9 @@
 package com.sdv.kit.server.controller;
 
-import com.sdv.kit.server.dto.SubjectCreationDto;
-import com.sdv.kit.server.dto.SubjectDto;
-import com.sdv.kit.server.dto.SubjectRenameDto;
-import com.sdv.kit.server.service.SubjectService;
+import com.sdv.kit.server.dto.StudentCreationDto;
+import com.sdv.kit.server.dto.StudentDto;
+import com.sdv.kit.server.dto.StudentRenameDto;
+import com.sdv.kit.server.service.StudentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,45 +20,40 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/subjects")
+@RequestMapping("/api/v1/students")
 @RequiredArgsConstructor
-public class SubjectController {
+public class StudentController {
 
-    private final SubjectService subjectService;
-
-    @GetMapping
-    @SneakyThrows
-    public ResponseEntity<List<SubjectDto>> getUserSubjects(Authentication authentication) {
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(subjectService
-                        .findAllByUser(authentication.getName())
-                        .get());
-    }
+    private final StudentService studentService;
 
     @PostMapping
     @SneakyThrows
-    public ResponseEntity<SubjectDto> addSubject(@RequestBody @Valid SubjectCreationDto subjectCreationDto,
+    public ResponseEntity<StudentDto> addStudent(@RequestBody @Valid StudentCreationDto studentCreationDto,
                                                  BindingResult bindingResult,
                                                  Authentication authentication) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(subjectService
-                        .save(subjectCreationDto, authentication.getName())
+                .body(studentService
+                        .save(studentCreationDto, authentication.getName())
                         .get());
     }
 
-    @PatchMapping("/{subjectId}")
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<HttpStatus> deleteStudent(@PathVariable Long studentId,
+                                                    Authentication authentication) {
+        studentService.delete(studentId, authentication.getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PatchMapping("/{studentId}")
     @SneakyThrows
-    public ResponseEntity<SubjectDto> renameSubject(@PathVariable Long subjectId,
-                                                    @RequestBody @Valid SubjectRenameDto subjectRenameDto,
+    public ResponseEntity<StudentDto> renameStudent(@PathVariable Long studentId,
+                                                    @RequestBody @Valid StudentRenameDto studentRenameDto,
                                                     BindingResult bindingResult,
                                                     Authentication authentication) {
         if (bindingResult.hasErrors()) {
@@ -68,15 +62,8 @@ public class SubjectController {
 
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(subjectService
-                        .rename(subjectId, subjectRenameDto, authentication.getName())
+                .body(studentService
+                        .rename(studentId, studentRenameDto, authentication.getName())
                         .get());
-    }
-
-    @DeleteMapping("/{subjectId}")
-    public ResponseEntity<HttpStatus> deleteSubject(@PathVariable Long subjectId,
-                                                    Authentication authentication) {
-        subjectService.delete(subjectId, authentication.getName());
-        return ResponseEntity.noContent().build();
     }
 }

@@ -8,6 +8,10 @@ plugins {
 group = 'com.sdv.kit'
 version = '0.0.1-SNAPSHOT'
 
+def openapiVersion = '2.0.0'
+def jjwtVersion = '0.11.5'
+def mapstructVersion = '1.5.5.Final'
+
 java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
@@ -31,16 +35,18 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${openapiVersion}"
+
+	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	implementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
 	implementation 'org.liquibase:liquibase-core'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

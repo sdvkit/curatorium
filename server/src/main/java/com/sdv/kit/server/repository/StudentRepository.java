@@ -10,8 +10,7 @@ import java.util.Optional;
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
     @EntityGraph(attributePaths = {"group"})
-    @Query(value =
-            "select s from Student s " +
+    @Query(value = "select s from Student s " +
             "join s.group.user u " +
             "where u.username = :username and s.id = :id")
     Optional<Student> findByIdAndUser(Long id, String username);

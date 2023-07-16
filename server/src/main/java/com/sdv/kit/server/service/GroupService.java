@@ -1,22 +1,21 @@
 package com.sdv.kit.server.service;
 
-import com.sdv.kit.server.dto.group.GroupCreationDto;
-import com.sdv.kit.server.dto.group.GroupDto;
-import com.sdv.kit.server.dto.group.GroupRenameDto;
-import com.sdv.kit.server.model.Group;
+import com.sdv.kit.server.dto.GroupCreationDto;
+import com.sdv.kit.server.dto.GroupDto;
+import com.sdv.kit.server.dto.GroupRenameDto;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public interface GroupService {
 
-    List<GroupDto> findAllByUser();
+    CompletableFuture<List<GroupDto>> findAllByUser(String username);
 
-    Optional<Group> save(GroupCreationDto groupCreationDto);
+    CompletableFuture<GroupDto> save(GroupCreationDto groupCreationDto, String username);
 
-    Optional<Group> rename(Long groupId, GroupRenameDto groupRenameDto);
+    CompletableFuture<GroupDto> rename(Long groupId, GroupRenameDto groupRenameDto, String username);
 
-    void delete(Long groupId);
+    void delete(Long groupId, String username);
 
-    Optional<Group> archive(Long groupId);
+    CompletableFuture<GroupDto> archive(Long groupId, String username);
 }

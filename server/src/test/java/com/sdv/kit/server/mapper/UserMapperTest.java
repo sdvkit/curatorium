@@ -1,10 +1,10 @@
 package com.sdv.kit.server.mapper;
 
-import com.sdv.kit.server.dto.user.UserDto;
-import com.sdv.kit.server.dto.user.UserLoginDto;
-import com.sdv.kit.server.dto.user.UserRegistrationDto;
+import com.sdv.kit.server.dto.UserDto;
+import com.sdv.kit.server.dto.UserLoginDto;
+import com.sdv.kit.server.dto.UserRegistrationDto;
 import com.sdv.kit.server.model.User;
-import com.sdv.kit.server.model.enumerated.UserRole;
+import com.sdv.kit.server.model.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;

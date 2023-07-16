@@ -1,6 +1,5 @@
-package com.sdv.kit.server.dto.group;
+package com.sdv.kit.server.dto;
 
-import com.sdv.kit.server.dto.student.StudentDto;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;

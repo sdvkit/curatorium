@@ -9,14 +9,12 @@ import java.util.Optional;
 
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
-    @Query(value =
-            "select s from Subject s " +
+    @Query(value = "select s from Subject s " +
             "join s.user u " +
             "where u.username = :username and s.name = :subjectName")
     Optional<Subject> findExistsSubject(String subjectName, String username);
 
-    @Query(value =
-            "select s from Subject s " +
+    @Query(value = "select s from Subject s " +
             "join s.user u " +
             "where u.username = :username")
     List<Subject> findAllByUser(String username);

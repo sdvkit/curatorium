@@ -16,8 +16,10 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "groups")
@@ -45,7 +47,7 @@ public class Group {
 
     @Builder.Default
     @OneToMany(mappedBy = "group", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Student> students = new ArrayList<>();
+    private Set<Student> students = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "group", orphanRemoval = true, cascade = CascadeType.ALL)
