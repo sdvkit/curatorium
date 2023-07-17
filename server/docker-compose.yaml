@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  app:
+    image: 'curatorium-server:latest'
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "8081:8081"
+    container_name: curatorium-server-app
+    depends_on:
+      - db
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
+  db:
+    image: 'postgres:latest'
+    container_name: curatorium-server-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=sdvkit
+      - POSTGRES_PASSWORD=sdvkit-roottoor
+      - POSTGRES_DB=curatorium
