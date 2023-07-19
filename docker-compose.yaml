@@ -1,10 +1,23 @@
 version: "3.8"
 
 services:
-  app:
+  client:
+    image: curatorium-client:latest
+    container_name: curatorium-client-app
+    build: 
+      dockerfile: ./client/Dockerfile
+      context: .
+    working_dir: /client
+    volumes:
+      - './client:/client'
+      - '/client/node_modules'
+    ports:
+      - "8080:5173"
+
+  server:
     image: 'curatorium-server:latest'
     build:
-      dockerfile: Dockerfile
+      dockerfile: ./server/Dockerfile
       context: .
     ports:
       - "8081:8081"
