@@ -80,4 +80,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         final UserDto renamedUserDto = USER_MAPPER.toDto(userRepository.save(user));
         return CompletableFuture.completedFuture(renamedUserDto);
     }
+
+    @Async
+    @Override
+    public CompletableFuture<UserDto> getUserInfo(String username) {
+        final UserDto userDto = userRepository.findByUsername(username)
+                .map(USER_MAPPER::toDto)
+                .orElseThrow(() -> new UsernameNotFoundException("There's no user with this username"));
+
+        return CompletableFuture.completedFuture(userDto);
+    }
 }

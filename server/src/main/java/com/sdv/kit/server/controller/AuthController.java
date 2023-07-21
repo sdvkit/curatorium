@@ -43,7 +43,8 @@ public class AuthController {
             throw new UsernameNotFoundException("There's no user with this username");
         }
 
-        final String tokenValue = jwtService.generateToken(userLoginDto.username());
+        final UserDto userInfoDto = userService.getUserInfo(userLoginDto.username()).get();
+        final String tokenValue = jwtService.generateToken(userInfoDto);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new Jwt(tokenValue));

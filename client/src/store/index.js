@@ -1,15 +1,12 @@
-import Cookies from 'js-cookie'
 import {createStore} from 'vuex'
+import jwt from '../jwt'
 
 const store = createStore({
     state () {
         return {
             tempSecondLvlKey: 1,
 
-            user: {
-                username: 'sdvkit',
-                fullName: 'Nikita Sudaev'
-            },
+            user: {},
             groupsMenuItems: [
                 {
                     key: `1`, 
@@ -269,9 +266,15 @@ const store = createStore({
             const student = payload[0]
             const mark = payload[1]
             student.marks.push(mark)
+        },
+        SAVE_USER(state, payload) {
+            state.user = payload
         }
     },
     actions: {
+        async loadUser({ commit }) {
+            commit('SAVE_USER', jwt.getInMemoryUser)
+        }
     }
 })
 

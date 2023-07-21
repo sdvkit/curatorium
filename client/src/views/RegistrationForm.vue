@@ -47,6 +47,7 @@ import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Divider from 'primevue/divider'
 import CuratoriumFeatures from '../components/CuratoriumFeatures.vue'
+import api from '../api'
 
 export default {
     name: 'registration-form',
@@ -86,7 +87,16 @@ export default {
                 return
             }
 
-            this.$router.push({ path: '/' })
+            api.registration({
+                fullName: this.fullName,
+                username: this.username,
+                password: this.password
+            }).then(() => {
+                if (api.isRegistrationError) {
+                    this.$toast.add({ severity: 'error', summary: 'Ошибка при регистрации', detail: `Что-то пошло не так.`, life: 6000 })
+                    api.isRegistrationError = false
+                }
+            })
         }
     },
     components: {

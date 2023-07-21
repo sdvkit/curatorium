@@ -1,5 +1,7 @@
 <template>
     <div class="wrapper">
+        <Toast></Toast>
+
         <div class="form">
             <div class="features-side">
                 <CuratoriumFeatures />
@@ -33,10 +35,12 @@
 
 <script>
 import Button from 'primevue/button'
+import Toast from 'primevue/toast'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Divider from 'primevue/divider'
 import CuratoriumFeatures from '../components/CuratoriumFeatures.vue'
+import api from '../api'
 
 export default {
     name: 'login-form',
@@ -48,7 +52,15 @@ export default {
     },
     methods: {
         login() {
-            this.$router.push({ path: '/' })
+            api.login({
+                username: this.username,
+                password: this.password
+            }).then(() => {
+                if (api.isLoginError) {
+                    this.$toast.add({ severity: 'error', summary: 'Ошибка при входе', detail: `Что-то пошло не так. Убедитесь, что вы ввели правильный логин и пароль.`, life: 6000 })
+                    api.isLoginError = false
+                }
+            })
         }
     },
     components: {
@@ -56,6 +68,7 @@ export default {
         InputText,
         Password,
         Divider,
+        Toast,
         CuratoriumFeatures
     }
 }

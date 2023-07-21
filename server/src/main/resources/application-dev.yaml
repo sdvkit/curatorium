@@ -12,4 +12,6 @@ spring:
     properties:
       hibernate.format_sql: true
 
+server.port: 8081
 jwt.secret: A3S5566B54703343367639792F423F4528482B4D62516C5468576D5A71347437
+frontend.domain: http://localhost:5173

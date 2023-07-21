@@ -11,4 +11,6 @@ public interface UserService {
     CompletableFuture<UserDto> register(UserRegistrationDto userRegistrationDto);
 
     CompletableFuture<UserDto> rename(String username, UserRenameDto userRenameDto);
+
+    CompletableFuture<UserDto> getUserInfo(String username);
 }

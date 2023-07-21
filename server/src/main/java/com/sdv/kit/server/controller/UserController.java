@@ -27,9 +27,9 @@ public class UserController {
     @PatchMapping("/{username}")
     @SneakyThrows
     public ResponseEntity<UserDto> renameUser(@PathVariable String username,
-                                          @RequestBody @Valid UserRenameDto userRenameDto,
-                                          BindingResult bindingResult,
-                                          Authentication authentication) {
+                                              @RequestBody @Valid UserRenameDto userRenameDto,
+                                              BindingResult bindingResult,
+                                              Authentication authentication) {
         if (bindingResult.hasErrors() || !username.equals(authentication.getName())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

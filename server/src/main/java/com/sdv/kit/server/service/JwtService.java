@@ -1,5 +1,6 @@
 package com.sdv.kit.server.service;
 
+import com.sdv.kit.server.dto.UserDto;
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,9 +20,9 @@ public interface JwtService {
 
     Boolean validateToken(String token, UserDetails userDetails);
 
-    String generateToken(String userName);
+    String generateToken(UserDto userDto);
 
-    String createToken(Map<String, Object> claims, String userName);
+    String createToken(Map<String, Object> claims, UserDto userDto);
 
     Key getSignKey();
 }

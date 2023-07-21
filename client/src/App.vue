@@ -226,7 +226,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex"
+import { mapGetters, mapActions } from "vuex"
 import { FilterMatchMode } from "primevue/api"
 import { useRoute } from 'vue-router'
 import cnsl from '../cnsl.json'
@@ -256,10 +256,16 @@ import EditStudentDialogVue from "./components/EditStudentDialog.vue"
 import Terminal from 'primevue/terminal'
 import TerminalService from 'primevue/terminalservice'
 import Avatar from 'primevue/avatar'
+import auth from "./auth"
+import jwt from './jwt'
 
 export default {
     mounted() {
         TerminalService.on('command', terminalHandler.handle)
+        
+        if (jwt.isTokenPresents) {
+            this.loadUser()
+        }
     },
     beforeUnmount() {
         TerminalService.off('command', terminalHandler.handle)
@@ -349,14 +355,13 @@ export default {
         },
     },
     methods: {
+        ...mapActions(['loadUser']),
         exitFromProfile() {
             this.$confirm.require({
                 message: `Вы действительно хотите выйти из аккаунта?`,
                 header: 'Потдверждение выхода',
                 icon: 'pi pi-info-circle',        
-                accept: () => {
-                   this.$router.push({ path: '/login' })
-                },
+                accept: () => auth.logout(),
                 reject: () => {}
             })
         },

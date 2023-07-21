@@ -1,5 +1,6 @@
 package com.sdv.kit.server.service.impl;
 
+import com.sdv.kit.server.dto.UserDto;
 import com.sdv.kit.server.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,13 +13,12 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class JwtServiceImpl implements JwtService {
 
-    private static final Long EXPIRATION = 1000 * 60 * 60 * 30L;
+    private static final Long EXPIRATION = 1000 * 60 * 60 * 24 * 30L;
 
     @Value("${jwt.secret}")
     public String secretKey;
@@ -54,16 +54,16 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateToken(String username) {
-        final Map<String,Object> claims = new HashMap<>();
-        return createToken(claims, username);
+    public String generateToken(UserDto userDto) {
+        final Map<String,Object> claims = Map.of("fullName", userDto.fullName());
+        return createToken(claims, userDto);
     }
 
     @Override
-    public String createToken(Map<String, Object> claims, String username) {
+    public String createToken(Map<String, Object> claims, UserDto userDto) {
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(userDto.username())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
