@@ -62,6 +62,9 @@ public class FirstLvlStatementServiceImpl implements FirstLvlStatementService {
         });
 
         secondLvlStatementRepository.saveAll(secondLvlStatementsList);
+
+        firstLvlStatement.setSecondLvlStatements(secondLvlStatementsList);
+
         return CompletableFuture.completedFuture(FLS_MAPPER.toDto(firstLvlStatement));
     }
 

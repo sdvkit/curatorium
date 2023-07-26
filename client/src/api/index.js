@@ -65,6 +65,8 @@ const api = {
                         })
                     })
 
+                   convertedStudent.marks.sort((mark1, mark2) => mark1.typeId - mark2.typeId)
+
                     convertedGroup.items[0].items.push(convertedStudent)
                 })
 
@@ -256,7 +258,7 @@ const api = {
         })
     },
     async editMark(markId, newValue) {
-        await axios({
+        return await axios({
             method: 'patch',
             url: `${this.baseUrl}/marks/${markId}`,
             headers: { 'Authorization': `Bearer ${jwt.getInMemoryToken}` },

@@ -113,6 +113,9 @@ export default {
     },
     methods: {
         onInputMark(slotProps) {
+
+            console.log("INPUT");
+
             if (this.isInputProcess) {
                 this.oldMarks = []
 
@@ -125,6 +128,9 @@ export default {
             }
         },
         onCellEditComplete(event) {
+
+            console.log("COMPLETED");
+
             const currentMarks = Object.keys(event.data)
                 .filter(key => key.startsWith('mark_'))
                 .map(key => event.data[key])
@@ -146,6 +152,7 @@ export default {
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
 
+
             const mark = { secondLvlStatementKey: statement.key, value: 0, typeId: 0 }
             data[field] = mark
             this.$store.commit('SAVE_MARK', [student, mark])
@@ -160,16 +167,16 @@ export default {
 
             this.params.students = []
             originalStudents.forEach((student) => {
-                let entitie = { label: student.label }
+                let entity = { label: student.label }
         
                 const marks = student.marks.filter((mark) => {
                     const foundSecondLvlStatement = this.params.firstLvlStatement.secondLvlStatements.find(secondLvlStatement => secondLvlStatement.key === mark.secondLvlStatementKey)
                     return foundSecondLvlStatement !== undefined && foundSecondLvlStatement.subject.key === this.params.subjectKey
                 })
 
-                marks.forEach((mark) => entitie[`mark_${Object.keys(entitie).length}`] = mark)
-                entitie['key'] = student.key
-                this.params.students.push(entitie)
+                marks.forEach((mark) => entity[`mark_${Object.keys(entity).length}`] = mark)
+                entity['key'] = student.key
+                this.params.students.push(entity)
             })
         },
         addControlMark() {
@@ -181,16 +188,16 @@ export default {
 
             this.params.students = []
             originalStudents.forEach((student) => {
-                let entitie = { label: student.label }
+                let entity = { label: student.label }
         
                 const marks = student.marks.filter((mark) => {
                     const foundSecondLvlStatement = this.params.firstLvlStatement.secondLvlStatements.find(secondLvlStatement => secondLvlStatement.key === mark.secondLvlStatementKey)
                     return foundSecondLvlStatement !== undefined && foundSecondLvlStatement.subject.key === this.params.subjectKey
                 })
 
-                marks.forEach((mark) => entitie[`mark_${Object.keys(entitie).length}`] = mark)
-                entitie['key'] = student.key
-                this.params.students.push(entitie)
+                marks.forEach((mark) => entity[`mark_${Object.keys(entity).length}`] = mark)
+                entity['key'] = student.key
+                this.params.students.push(entity)
             })
         },
         addCursMark() {
@@ -202,16 +209,16 @@ export default {
 
             this.params.students = []
             originalStudents.forEach((student) => {
-                let entitie = { label: student.label }
+                let entity = { label: student.label }
         
                 const marks = student.marks.filter((mark) => {
                     const foundSecondLvlStatement = this.params.firstLvlStatement.secondLvlStatements.find(secondLvlStatement => secondLvlStatement.key === mark.secondLvlStatementKey)
                     return foundSecondLvlStatement !== undefined && foundSecondLvlStatement.subject.key === this.params.subjectKey
                 })
 
-                marks.forEach((mark) => entitie[`mark_${Object.keys(entitie).length}`] = mark)
-                entitie['key'] = student.key
-                this.params.students.push(entitie)
+                marks.forEach((mark) => entity[`mark_${Object.keys(entity).length}`] = mark)
+                entity['key'] = student.key
+                this.params.students.push(entity)
             })
         },
     },

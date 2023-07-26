@@ -5,8 +5,6 @@ import api from '../api'
 const store = createStore({
     state () {
         return {
-            tempSecondLvlKey: 1,
-
             user: {},
             groupsMenuItems: [],
             subjectsMenuItems: [],
@@ -205,19 +203,24 @@ const store = createStore({
 
             api.saveFirstLvlStatement(statementName, statementSubjects, statementGroup)
                 .then(response => {
-                    const entitie = {
+                    console.log(response);
+                    const entity = {
                         key: response.data.id,
                         label: statementName,
                         group: statementGroup,
                         secondLvlStatements: []
                     }
-        
-                    statementSubjects.forEach(statementSubject => entitie.secondLvlStatements.push({
-                        key: state.tempSecondLvlKey++,
-                        subject: statementSubject
-                    }))
-        
-                    state.firstLvlStatements.push(entitie)
+
+                    response.data.secondLvlStatements.forEach(secondLvlStatement => {
+                        const secondLvlStatementSubject = statementSubjects.find(subject => subject.key === secondLvlStatement.subjectId)
+
+                        entity.secondLvlStatements.push({
+                            key: secondLvlStatement.id,
+                            subject: secondLvlStatementSubject
+                        })
+                    })
+
+                    state.firstLvlStatements.push(entity)
                 })
                 .catch(err => console.log(err))
         },
@@ -303,7 +306,10 @@ const store = createStore({
             const editedMark = payload[0]
             const oldMark = payload[1]
 
+            console.log(`ed - ${JSON.stringify(editedMark)} \n\nod - ${JSON.stringify(oldMark)}`);
+
             api.editMark(editedMark.key, editedMark.value)
+                .then(response => console.log(response))
                 .catch(err => {
                     editedMark.value = oldMark.value
                     console.log(err)

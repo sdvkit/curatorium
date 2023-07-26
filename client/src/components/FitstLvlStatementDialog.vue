@@ -139,16 +139,19 @@ export default {
             this.secondLvlStatementDialogParams.subjectKey = this.getSubjects.find((subject) => subject.label === subjectColumn.label).key
 
             this.params.group.items[0].items.forEach((student) => {
-                let entitie = { label: student.label }
+                let entity = { label: student.label }
         
                 const marks = student.marks.filter((mark) => {
                     const foundSecondLvlStatement = this.params.statement.secondLvlStatements.find(secondLvlStatement => secondLvlStatement.key === mark.secondLvlStatementKey)
                     return foundSecondLvlStatement !== undefined && foundSecondLvlStatement.subject.key === this.secondLvlStatementDialogParams.subjectKey
                 })
 
-                marks.forEach((mark) => entitie[`mark_${Object.keys(entitie).length}`] = mark)
-                entitie['key'] = student.key
-                this.secondLvlStatementDialogParams.students.push(entitie)
+                marks.sort((mark1, mark2) => mark1.typeId - mark2.typeId)
+
+                marks.forEach((mark) => entity[`mark_${Object.keys(entity).length}`] = mark)
+                entity['key'] = student.key
+
+                this.secondLvlStatementDialogParams.students.push(entity)
             })
         }
     },
