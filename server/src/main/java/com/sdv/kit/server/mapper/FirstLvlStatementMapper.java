@@ -14,9 +14,11 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface FirstLvlStatementMapper {
 
     @Mapping(source = "groupId", target = "group.id")
+    @Mapping(source = "secondLvlStatements", target = "secondLvlStatements")
     FirstLvlStatement toEntity(FirstLvlStatementDto firstLvlStatementDto);
 
     @Mapping(source = "group.id", target = "groupId")
+    @Mapping(source = "secondLvlStatements", target = "secondLvlStatements")
     FirstLvlStatementDto toDto(FirstLvlStatement firstLvlStatement);
 
     @Mapping(source = "groupId", target = "group.id")

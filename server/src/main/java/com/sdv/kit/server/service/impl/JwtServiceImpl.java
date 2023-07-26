@@ -55,7 +55,10 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public String generateToken(UserDto userDto) {
-        final Map<String,Object> claims = Map.of("fullName", userDto.fullName());
+        final Map<String,Object> claims = Map.of(
+                "fullName", userDto.fullName(),
+                "role", userDto.role().getAuthority()
+        );
         return createToken(claims, userDto);
     }
 

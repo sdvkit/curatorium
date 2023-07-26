@@ -10,8 +10,10 @@ import org.mapstruct.Mapping;
 @Mapper(uses = {SecondLvlStatementMapper.class, StudentMapper.class})
 public interface MarkMapper {
 
+    @Mapping(source = "secondLvlStatementId", target = "secondLvlStatement.id")
     Mark toEntity(MarkDto markDto);
 
+    @Mapping(source = "secondLvlStatement.id", target = "secondLvlStatementId")
     MarkDto toDto(Mark mark);
 
     @Mapping(source = "secondLvlStatementId", target = "secondLvlStatement.id")

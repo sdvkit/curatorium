@@ -2,6 +2,7 @@
     <Dialog :breakpoints="{ '960px': '75vw', '641px': '100vw' }" modal maximizable :style="{ width: '75vw' }" 
         :header="(params.subject !== null) ? params.subject.label : '' " :contentStyle="{ minHeight: '580px' }">
         <DataTable :value="params.students" editMode="cell" tableClass="editable-cells-table"
+            v-on:cell-edit-complete="onCellEditComplete"
             contextMenu showGridlines scrollable scrollHeight="560px" responsiveLayout="stack" breakpoint="960px">
             <template #empty>Пусто</template>
             <ColumnGroup type="header">
@@ -13,9 +14,9 @@
                             <Button icon="pi pi-plus" text @click="toggleAddMarkMenu" :style="{ position: 'absolute', right: '5px' }" aria-haspopup="true" aria-controls="overlay_menu" />
                             <Menu ref="menu" id="overlay_menu" :model="addMarkItems" :popup="true" :style="{ width: '200px' }">
                                 <template #itemicon="slotProps">
-                                    <Tag v-if="slotProps.item.key === 1" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px', background: 'none' }" />
-                                    <Tag v-if="slotProps.item.key === 2" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px' }" />
-                                    <Tag v-if="slotProps.item.key === 3" severity="warning" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px' }" />
+                                    <Tag v-if="slotProps.item.key === 0" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px', background: 'none' }" />
+                                    <Tag v-if="slotProps.item.key === 1" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px' }" />
+                                    <Tag v-if="slotProps.item.key === 2" severity="warning" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px' }" />
                                 </template>    
                             </Menu>
                         </template>
@@ -27,13 +28,13 @@
             <Column v-if="getMaxMarksCount > 0" header="" v-for="(temp, index) in [...Array(getMaxMarksCount).keys()]">
                 <template #body="slotProps">
                     <div v-if="slotProps.data[`mark_${index + 1}`] !== undefined">
-                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 1">
+                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 0">
                             {{ slotProps.data[`mark_${index + 1}`].value }}
                         </span>
-                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 2" :style="{ color: 'var(--primary-color)' }">
+                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 1" :style="{ color: 'var(--primary-color)' }">
                             {{ slotProps.data[`mark_${index + 1}`].value }}
                         </span>
-                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 3" :style="{ color: '#fbc129' }">
+                        <span v-if="slotProps.data[`mark_${index + 1}`].typeId === 2" :style="{ color: '#fbc129' }">
                             {{ slotProps.data[`mark_${index + 1}`].value }}
                         </span>
                     </div>
@@ -42,7 +43,7 @@
                     </div>
                 </template>
                 <template #editor="slotProps">
-                    <InputNumber v-model="slotProps.data[`mark_${index + 1}`].value" autofocus inputId="integeronly" />
+                    <InputNumber :oninput="onInputMark(slotProps)" v-model="slotProps.data[`mark_${index + 1}`].value" autofocus inputId="integeronly" />
                 </template>
             </Column>
 
@@ -75,21 +76,23 @@ export default {
         return {
             addMarkItems: [
                 {
-                    key: 1,
+                    key: 0,
                     label: 'Стандартная отметка',
                     command: this.addMark
                 },
                 {
-                    key: 2,
+                    key: 1,
                     label: 'Отметка за ОКР',
                     command: this.addControlMark
                 },
                 {
-                    key: 3,
+                    key: 2,
                     label: 'Отметка за курсовую работу',
                     command: this.addCursMark
                 }
-            ]
+            ],
+            oldMarks: [],
+            isInputProcess: true
         }
     },
     computed: {
@@ -106,9 +109,34 @@ export default {
             })
 
             return maxMarksCount
-        }
+        },
     },
     methods: {
+        onInputMark(slotProps) {
+            if (this.isInputProcess) {
+                this.oldMarks = []
+
+                Object.keys(slotProps.data)
+                    .filter(key => key.startsWith('mark_'))
+                    .map(key => slotProps.data[key])
+                    .forEach(mark => this.oldMarks.push({...mark}))
+                
+                this.isInputProcess = false
+            }
+        },
+        onCellEditComplete(event) {
+            const currentMarks = Object.keys(event.data)
+                .filter(key => key.startsWith('mark_'))
+                .map(key => event.data[key])
+
+            for (let i = 0; i < this.oldMarks.length; i++) {
+                if (currentMarks[i].value !== this.oldMarks[i].value) {
+                    this.$store.commit('EDIT_MARK', [currentMarks[i], this.oldMarks[i]])
+                }
+            }
+
+            this.isInputProcess = true
+        },
         toggleAddMarkMenu(event) {
             this.$refs.menu.toggle(event);
         },
@@ -118,7 +146,7 @@ export default {
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
 
-            const mark = { secondLvlStatementKey: statement.key, value: 0, typeId: 1 }
+            const mark = { secondLvlStatementKey: statement.key, value: 0, typeId: 0 }
             data[field] = mark
             this.$store.commit('SAVE_MARK', [student, mark])
             return data[field]
@@ -128,7 +156,7 @@ export default {
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
 
-            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 1 }]))
+            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 0 }]))
 
             this.params.students = []
             originalStudents.forEach((student) => {
@@ -149,7 +177,7 @@ export default {
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
 
-            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 2 }]))
+            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 1 }]))
 
             this.params.students = []
             originalStudents.forEach((student) => {
@@ -170,7 +198,7 @@ export default {
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
 
-            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 3 }]))
+            originalStudents.forEach(student => this.$store.commit('SAVE_MARK', [student, { secondLvlStatementKey: statement.key, value: 0, typeId: 2 }]))
 
             this.params.students = []
             originalStudents.forEach((student) => {

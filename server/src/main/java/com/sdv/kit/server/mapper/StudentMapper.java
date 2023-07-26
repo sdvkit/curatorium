@@ -7,7 +7,7 @@ import com.sdv.kit.server.model.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper
+@Mapper(uses = { MarkMapper.class })
 public interface StudentMapper {
 
     Student toEntity(StudentDto studentDto);

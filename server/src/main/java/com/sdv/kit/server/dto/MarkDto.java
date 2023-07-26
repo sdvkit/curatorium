@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 
 public record MarkDto(@NotNull Long id,
+                      @NotNull Long secondLvlStatementId,
                       @NotNull @PositiveOrZero Integer value,
                       @NotNull MarkType markType) implements Serializable {
 }

@@ -1,5 +1,6 @@
 import {createStore} from 'vuex'
 import jwt from '../jwt'
+import api from '../api'
 
 const store = createStore({
     state () {
@@ -7,52 +8,10 @@ const store = createStore({
             tempSecondLvlKey: 1,
 
             user: {},
-            groupsMenuItems: [
-                {
-                    key: `1`, 
-                    label: `TTO (2022)`, 
-                    name: 'TTO', 
-                    icon: 'pi pi-folder', 
-                    year: 2022, 
-                    createdAt: new Date(),
-                    isArchived: false,
-                    items: [
-                        { key: `1_students`, label: 'Учащиеся', icon: 'pi pi-users', items: [
-                            {
-                                key: 1,
-                                label: 'Oleg OO',
-                                icon: 'pi pi-user',
-                                marks: [
-                                    { value: 9, typeId: 1, secondLvlStatementKey: 1 },
-                                    { value: 4, typeId: 1, secondLvlStatementKey: 1 },
-                                    { value: 7, typeId: 2, secondLvlStatementKey: 1 },
-                                ]
-                            },
-                            {
-                                key: 2,
-                                label: 'Ivan II',
-                                icon: 'pi pi-user',
-                                marks: [
-                                    { value: 10, typeId: 1, secondLvlStatementKey: 1 },
-                                    { value: 1, typeId: 1, secondLvlStatementKey: 2 },
-                                    { value: 8, typeId: 3, secondLvlStatementKey: 1 },
-                                ]
-                            },
-                            // { key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },{ key: 22221, label: 'test', icon: 'pi pi-user', marks: [] },
-                        ] },
-                        { key: `1_add_student`, label: 'Добавить учащегося', icon: 'pi pi-plus'},
-                        { key: `1_open`, label: 'Открыть', icon: 'pi pi-folder-open'},
-                        { key: `1_rename`, label: 'Переименовать', icon: 'pi pi-pencil'}
-                    ]
-                }
-            ],
-            subjectsMenuItems: [
-                { key: 1, label: 'Математика', icon: 'pi pi-book' },
-                { separator: true },
-                { key: 3, label: 'Оп', icon: 'pi pi-book' },
-            ],
+            groupsMenuItems: [],
+            subjectsMenuItems: [],
             breadcrumbMenuItems: [],
-            firstLvlStatements: [],
+            firstLvlStatements: [], 
         }
     },
     getters: {
@@ -102,10 +61,7 @@ const store = createStore({
     },
     mutations: {
         SAVE_PROFILE_CHANGES(state, payload) {
-            const username = payload[0]
-            const fullName = payload[1]
-            state.user.username = username
-            state.user.fullName = fullName
+            api.saveProfileChanges({ username: payload[0], fullName: payload[1] })
         },
         CLEAR_BREADCRUMB_MENU(state) {
             state.breadcrumbMenuItems = []
@@ -119,21 +75,37 @@ const store = createStore({
         },
         DELETE_STUDENT(state, payload) {
             const deletableStudent = payload[0]
-            const deletableStudentGroup = payload[1]
-            const deletableStudentIndex = deletableStudentGroup.items[0].items.indexOf(deletableStudent)
-
-            deletableStudentGroup.items[0].items.splice(deletableStudentIndex, 1)
+           
+            api.deleteStudent(deletableStudent.key)
+                .then(() => {
+                    const deletableStudentGroup = payload[1]
+                    const deletableStudentIndex = deletableStudentGroup.items[0].items.indexOf(deletableStudent)
+                    deletableStudentGroup.items[0].items.splice(deletableStudentIndex, 1)
+                })
+                .catch(err => console.log(err))
         },
         RENAME_STUDENT(state, payload) {
             const student = payload[0]
-            student.label = payload[1]
+            
+            api.renameStudent(student.key, payload[1])
+                .then(() => student.label = payload[1])
+                .catch(err => console.log(err))
         },
         SAVE_SUBJECT(state, subjectName) {
             if (state.subjectsMenuItems.length > 0) {
                 state.subjectsMenuItems.push({ separator: true })
             }
 
-            state.subjectsMenuItems.push({ key: state.subjectsMenuItems.length + 1, label: subjectName, icon: 'pi pi-book' })
+            api.saveSubject(subjectName)
+                .then(response => state.subjectsMenuItems.push({
+                    key: response.data.id, 
+                    label: subjectName, 
+                    icon: 'pi pi-book'
+                }))
+                .catch(err => {
+                    console.log(err)
+                    state.subjectsMenuItems.pop()
+                })
         },
         DELETE_SUBJECT(state, payload) {
             const subject = payload[0]
@@ -141,8 +113,12 @@ const store = createStore({
 
             for (let i = 0; i < state.firstLvlStatements.length; i++) {
                 const statement = state.firstLvlStatements[i]
+                const statementSubjects = []
+
+                statement.secondLvlStatements.forEach(secondLvlStatement => 
+                    statementSubjects.push(secondLvlStatement.subject))
                 
-                if (statement.subjects.indexOf(subject) !== -1 && statement.subjects.length === 2) {
+                if (statementSubjects.indexOf(subject) !== -1 && statementSubjects.length === 2) {
                     result.out = false
                     return
                 }
@@ -152,22 +128,40 @@ const store = createStore({
 
             if (deletableIndex !== state.subjectsMenuItems.length - 1) {
                 state.subjectsMenuItems.splice(deletableIndex, 2)
+                
+                api.deleteSubject(subject.key)
+                    .then(() => {})
+                    .catch(err => console.log(err))
             } else {
                 state.subjectsMenuItems.splice(deletableIndex -1, 2)
+
+                api.deleteSubject(subject.key)
+                    .then(() => {})
+                    .catch(err => console.log(err))
             }
 
             state.firstLvlStatements.forEach((statement) => {
-                if (statement.subjects.indexOf(subject) !== -1) {
-                    statement.subjects.splice(statement.subjects.indexOf(subject), 1)
-                }
+                statement.secondLvlStatements.forEach(secondLvlStatement => {
+                    
+                    if (secondLvlStatement.subject === subject) {
+                        const deletableStatementIndex = statement.secondLvlStatements.indexOf(secondLvlStatement)
+                        statement.secondLvlStatements.splice(deletableStatementIndex, 1)
+                    }  
+                })
             })
 
             result.out = true
         },
         RENAME_GROUP(state, payload) {
             const group = payload[0]
-            group.name = payload[1]
-            group.label = `${group.name} (${group.year})`
+            const newGroupName = payload[1]
+
+            api.renameGroup(group.key, newGroupName)
+                .then(() => {
+                    group.name = newGroupName
+                    group.label = `${group.name} (${group.year})`
+                })
+                .catch(err => console.log(err))
         },
         SAVE_GROUP(state, payload) {
             const groupName = payload[0]
@@ -175,106 +169,191 @@ const store = createStore({
             const openCommand = payload[2]
             const renameCommand = payload[3]
             const addStudentCommand = payload[4]
-            const newGroupIndex = state.groupsMenuItems.length + 1
 
-            state.groupsMenuItems.push({
-                key: `${newGroupIndex}`, 
-                label: `${groupName} (${groupYear})`, 
-                name: groupName, 
-                icon: 'pi pi-folder', 
-                year: groupYear, 
-                createdAt: new Date(),
-                isArchived: false,
-                items: [
-                    { key: `${newGroupIndex}_students`, label: 'Учащиеся', icon: 'pi pi-users', items: [] },
-                    { key: `${newGroupIndex}_add_student`, label: 'Добавить учащегося', icon: 'pi pi-plus', command: addStudentCommand},
-                    { key: `${newGroupIndex}_open`, label: 'Открыть', icon: 'pi pi-folder-open', command: openCommand},
-                    { key: `${newGroupIndex}_rename`, label: 'Переименовать', icon: 'pi pi-pencil', command: renameCommand}
-                ]
-            })
+            api.saveGroup(groupName, groupYear)
+                .then(response => {
+                    state.groupsMenuItems.push({
+                        key: `${response.data.id}`, 
+                        label: `${groupName} (${groupYear})`, 
+                        name: groupName, 
+                        icon: 'pi pi-folder', 
+                        year: groupYear, 
+                        createdAt: new Date(),
+                        isArchived: false,
+                        items: [
+                            { key: `${response.data.id}_students`, label: 'Учащиеся', icon: 'pi pi-users', items: [] },
+                            { key: `${response.data.id}_add_student`, label: 'Добавить учащегося', icon: 'pi pi-plus', command: addStudentCommand},
+                            { key: `${response.data.id}_open`, label: 'Открыть', icon: 'pi pi-folder-open', command: openCommand},
+                            { key: `${response.data.id}_rename`, label: 'Переименовать', icon: 'pi pi-pencil', command: renameCommand}
+                        ]
+                    })
+                })
+                .catch(err => console.log(err))
         },
-        DELETE_STATEMENT(state, deletableStatement) {
-            const deletableIndex = state.firstLvlStatements.indexOf(deletableStatement)
-            state.firstLvlStatements.splice(deletableIndex, 1)
+        DELETE_STATEMENT(state, deletableStatement) {    
+            api.deleteFirstLvlStatement(deletableStatement.key)
+                .then(() => {
+                    const deletableIndex = state.firstLvlStatements.indexOf(deletableStatement)
+                    state.firstLvlStatements.splice(deletableIndex, 1)
+                })
+                .catch(err => console.log(err))
         },
         SAVE_STATEMENT(state, payload) {
             const statementName = payload[0]
             const statementSubjects = payload[1]
             const statementGroup = payload[2]
 
-            const entitie = {
-                key: state.firstLvlStatements.length + 1,
-                label: statementName,
-                group: statementGroup,
-                secondLvlStatements: []
-            }
-
-            statementSubjects.forEach(statementSubject => entitie.secondLvlStatements.push({
-                key: state.tempSecondLvlKey++,
-                subject: statementSubject
-            }))
-
-            state.firstLvlStatements.push(entitie)
+            api.saveFirstLvlStatement(statementName, statementSubjects, statementGroup)
+                .then(response => {
+                    const entitie = {
+                        key: response.data.id,
+                        label: statementName,
+                        group: statementGroup,
+                        secondLvlStatements: []
+                    }
+        
+                    statementSubjects.forEach(statementSubject => entitie.secondLvlStatements.push({
+                        key: state.tempSecondLvlKey++,
+                        subject: statementSubject
+                    }))
+        
+                    state.firstLvlStatements.push(entitie)
+                })
+                .catch(err => console.log(err))
         },
         EDIT_STATEMENT(state, payload) {
             const editableStatement = payload[0]
             const newStatementName = payload[1]
 
-            state.firstLvlStatements.find((statement) => {
-                if (statement === editableStatement) {
-                    statement.label = newStatementName
-                }
-            })
+            api.renameStatement(editableStatement.key, newStatementName)
+                .then(() => {
+                    state.firstLvlStatements.find((statement) => {
+                        if (statement === editableStatement) {
+                            statement.label = newStatementName
+                        }
+                    })
+                })
+                .catch(err => console.log(err))
         },
         SAVE_STUDENT(state, payload) {
             const studentName = payload[0]
             const studentGroup = payload[1]
 
-            studentGroup.items[0].items.push({
-                key: studentGroup.items[0].items.length + 1,
-                label: studentName,
-                icon: 'pi pi-user',
-                marks: []
-            })
-
-            studentGroup.items[0].items.sort((student1, student2) => student1.label.localeCompare(student2.label))
+            api.saveStudent(studentGroup.key, studentName)
+                .then(response => {
+                    studentGroup.items[0].items.push({
+                        key: response.data.id,
+                        label: studentName,
+                        icon: 'pi pi-user',
+                        marks: []
+                    })
+        
+                    studentGroup.items[0].items.sort((student1, student2) => student1.label.localeCompare(student2.label))
+                })
+                .catch(err => console.log(err))
         },
         ARCHIVE_GROUP(state, group) {
-            group.isArchived = true
+            api.archiveGroup(group.key)
+                .then(() => group.isArchived = true)
+                .catch(err => console.log(err))
         },
         DEARCHIVE_GROUP(state, group) {
-            group.isArchived = false
+            api.archiveGroup(group.key)
+                .then(() => group.isArchived = false)
+                .catch(err => console.log(err))
         },
         DELETE_GROUP(state, deletableGroup) {
-            const deletableIndex = state.groupsMenuItems.indexOf(deletableGroup)
-
-            state.firstLvlStatements = state.firstLvlStatements.filter((statement) => statement.group !== deletableGroup)
-            state.groupsMenuItems.splice(deletableIndex, 1)
+            api.deleteGroup(deletableGroup.key)
+                .then(() => {
+                    const deletableIndex = state.groupsMenuItems.indexOf(deletableGroup)
+                    state.firstLvlStatements = state.firstLvlStatements.filter((statement) => statement.group !== deletableGroup)
+                    state.groupsMenuItems.splice(deletableIndex, 1)
+                })
+                .catch(err => console.log(err))
         },
         CLEAR_ARCHIVE(state) {
             const archivedGroups = state.groupsMenuItems.filter((group) => group.isArchived)
 
             while (archivedGroups.length !== 0) {
                 const deletableGroup = archivedGroups.shift()
-                const deletableIndex = state.groupsMenuItems.indexOf(deletableGroup)
-
-                state.firstLvlStatements = state.firstLvlStatements.filter((statement) => statement.group !== deletableGroup)
-                state.groupsMenuItems.splice(deletableIndex, 1)
+                
+                api.deleteGroup(deletableGroup.key)
+                    .then(() => {
+                        const deletableIndex = state.groupsMenuItems.indexOf(deletableGroup)
+                        state.firstLvlStatements = state.firstLvlStatements.filter((statement) => statement.group !== deletableGroup)
+                        state.groupsMenuItems.splice(deletableIndex, 1)
+                    })
+                    .catch(err => console.log(err))   
             }
         },
         SAVE_MARK(state, payload) {
             const student = payload[0]
             const mark = payload[1]
+
             student.marks.push(mark)
+
+            api.saveMark(student, mark)
+                .then(response => mark.key = response.data.id)
+                .catch(err => {
+                    student.marks.pop()
+                    console.log(err)
+                })
         },
-        SAVE_USER(state, payload) {
+        EDIT_MARK(state, payload) {
+            const editedMark = payload[0]
+            const oldMark = payload[1]
+
+            api.editMark(editedMark.key, editedMark.value)
+                .catch(err => {
+                    editedMark.value = oldMark.value
+                    console.log(err)
+                })
+        },
+        SAVE_USER_INFO(state, payload) {
             state.user = payload
+        },
+        SAVE_GROUP_INFO(state, payload) { 
+            state.groupsMenuItems = payload
+        },
+        SAVE_SUBJECTS_INFO(state, payload) {
+            state.subjectsMenuItems = payload
+        },
+        SAVE_STATEMENTS_INFO(state, payload) {
+            const statements = payload
+            const subjects = []
+
+            for (let i = 0; i < state.subjectsMenuItems.length; i += 2) {
+                subjects.push(state.subjectsMenuItems[i])
+            }
+
+            statements.forEach(firstLvlStatement => {
+                firstLvlStatement.group = state.groupsMenuItems
+                    .find(group => group.key === firstLvlStatement.group.key)
+                
+                firstLvlStatement.secondLvlStatements
+                    .forEach(secondLvlStatement => secondLvlStatement.subject = subjects
+                        .find(subject => subject.key === secondLvlStatement.subject.key))
+            })
+
+            state.firstLvlStatements = statements
         }
     },
     actions: {
-        async loadUser({ commit }) {
-            commit('SAVE_USER', jwt.getInMemoryUser)
-        }
+        loadUser({ commit }) {
+            commit('SAVE_USER_INFO', jwt.getInMemoryUser)
+        },
+        async loadGroups({ commit }, commands) {
+            return await api.getGroups(commands)
+                .then(groups => commit('SAVE_GROUP_INFO', groups))
+        },
+        async loadSubjects({ commit }) {
+            return await api.getSubjects()
+                .then(subjects => commit('SAVE_SUBJECTS_INFO', subjects))
+        },
+        async loadFirstLvlStatements({ commit }) {
+            return await api.getFirstLvlStatements()
+                .then(firstLvlStatements => commit('SAVE_STATEMENTS_INFO', firstLvlStatements))
+        },
     }
 })
 

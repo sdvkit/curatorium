@@ -10,7 +10,7 @@ const auth = {
     },
     authenticate(tokenValue) {
         Cookies.set('jwt', tokenValue, { expires: jwt.getExpiration(tokenValue) })
-        store.commit('SAVE_USER', jwt.getInMemoryUser)
+        store.commit('SAVE_USER_INFO', jwt.getInMemoryUser)
         router.push({ path: '/' })
     },
     logout() {

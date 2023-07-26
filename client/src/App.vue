@@ -262,9 +262,16 @@ import jwt from './jwt'
 export default {
     mounted() {
         TerminalService.on('command', terminalHandler.handle)
-        
+
         if (jwt.isTokenPresents) {
             this.loadUser()
+            this.loadSubjects()
+            this.loadGroups([
+                (event) => this.openGroup(event),
+                (event) => this.openRenameGroupDialod(event),
+                (event) => this.openAddStudentDialog(event)
+            ])
+                .then(() => this.loadFirstLvlStatements())
         }
     },
     beforeUnmount() {
@@ -355,7 +362,36 @@ export default {
         },
     },
     methods: {
-        ...mapActions(['loadUser']),
+        ...mapActions(['loadUser', 'loadGroups', 'loadSubjects', 'loadFirstLvlStatements']),
+        openRenameGroupDialod(event) {
+            this.editableGroup = this.getGroupsMenuItems.find((menuItem) => menuItem.key === event.item.key.replace('_rename', ''))
+                    
+            if (this.editableGroup === undefined) {
+                return
+            }
+
+            if (this.editableGroup.isArchived) {
+                this.$toast.add({ severity: 'info', summary: 'Отмена', detail: `Нельзя переименовать архивированную группу.`, life: 3000 })
+                return
+            } 
+                
+            this.newGroupName = this.editableGroup.name
+            this.isRenameGroupDialogVisible = true
+        },
+        openAddStudentDialog(event) {
+            this.newStudentGroup = this.getGroupsMenuItems.find((menuItem) => menuItem.key === event.item.key.replace('_add_student', ''))
+
+            if (this.newStudentGroup === undefined) {
+                return
+            }
+
+            if (this.newStudentGroup.isArchived) {
+                this.$toast.add({ severity: 'info', summary: 'Отмена', detail: `Нельзя добавить учащегося в архивированную группу.`, life: 3000 })
+                return
+            } 
+                    
+            this.isNewStudentDialogVisible = true
+        },
         exitFromProfile() {
             this.$confirm.require({
                 message: `Вы действительно хотите выйти из аккаунта?`,
@@ -573,27 +609,8 @@ export default {
                 this.newGroupName,
                 currentGroupYear,
                 (event) => this.openGroup(event),
-                (event) => {
-                    this.editableGroup = this.getGroupsMenuItems.find((menuItem) => menuItem.key === event.item.key.replace('_rename', ''))
-                    
-                    if (this.editableGroup.isArchived) {
-                        this.$toast.add({ severity: 'info', summary: 'Отмена', detail: `Нельзя переименовать архивированную группу.`, life: 3000 })
-                        return
-                    } 
-                    
-                    this.newGroupName = this.editableGroup.name
-                    this.isRenameGroupDialogVisible = true
-                },
-                (event) => {
-                    this.newStudentGroup = this.getGroupsMenuItems.find((menuItem) => menuItem.key === event.item.key.replace('_add_student', ''))
-
-                    if (this.newStudentGroup.isArchived) {
-                        this.$toast.add({ severity: 'info', summary: 'Отмена', detail: `Нельзя добавить учащегося в архивированную группу.`, life: 3000 })
-                        return
-                    } 
-                    
-                    this.isNewStudentDialogVisible = true
-                }
+                (event) => this.openRenameGroupDialod(event),
+                (event) => this.openAddStudentDialog(event)
             ])
 
             this.newGroupName = ''

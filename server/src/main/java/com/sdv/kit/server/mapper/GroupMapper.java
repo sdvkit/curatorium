@@ -6,7 +6,7 @@ import com.sdv.kit.server.dto.GroupRenameDto;
 import com.sdv.kit.server.model.Group;
 import org.mapstruct.Mapper;
 
-@Mapper(uses = {UserMapper.class})
+@Mapper(uses = {UserMapper.class, StudentMapper.class, MarkMapper.class})
 public interface GroupMapper {
 
     Group toEntity(GroupDto groupDto);

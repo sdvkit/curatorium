@@ -2,6 +2,8 @@ package com.sdv.kit.server.controller;
 
 import com.sdv.kit.server.dto.UserDto;
 import com.sdv.kit.server.dto.UserRenameDto;
+import com.sdv.kit.server.model.Jwt;
+import com.sdv.kit.server.service.JwtService;
 import com.sdv.kit.server.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +26,23 @@ public class UserController {
 
     private final UserService userService;
 
+    private final JwtService jwtService;
+
     @PatchMapping("/{username}")
     @SneakyThrows
-    public ResponseEntity<UserDto> renameUser(@PathVariable String username,
-                                              @RequestBody @Valid UserRenameDto userRenameDto,
-                                              BindingResult bindingResult,
-                                              Authentication authentication) {
+    public ResponseEntity<Jwt> renameUser(@PathVariable String username,
+                                          @RequestBody @Valid UserRenameDto userRenameDto,
+                                          BindingResult bindingResult,
+                                          Authentication authentication) {
         if (bindingResult.hasErrors() || !username.equals(authentication.getName())) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        final UserDto renamedUserDto = userService.rename(username, userRenameDto).get();
+        final String tokenValue = jwtService.generateToken(renamedUserDto);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(userService
-                        .rename(username, userRenameDto)
-                        .get());
+                .body(new Jwt(tokenValue));
     }
 }
