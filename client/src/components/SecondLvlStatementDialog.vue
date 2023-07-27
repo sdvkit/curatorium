@@ -113,9 +113,6 @@ export default {
     },
     methods: {
         onInputMark(slotProps) {
-
-            console.log("INPUT");
-
             if (this.isInputProcess) {
                 this.oldMarks = []
 
@@ -128,9 +125,6 @@ export default {
             }
         },
         onCellEditComplete(event) {
-
-            console.log("COMPLETED");
-
             const currentMarks = Object.keys(event.data)
                 .filter(key => key.startsWith('mark_'))
                 .map(key => event.data[key])

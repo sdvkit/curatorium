@@ -294,7 +294,7 @@ const store = createStore({
             const mark = payload[1]
 
             student.marks.push(mark)
-
+            
             api.saveMark(student, mark)
                 .then(response => mark.key = response.data.id)
                 .catch(err => {
@@ -305,8 +305,6 @@ const store = createStore({
         EDIT_MARK(state, payload) {
             const editedMark = payload[0]
             const oldMark = payload[1]
-
-            console.log(`ed - ${JSON.stringify(editedMark)} \n\nod - ${JSON.stringify(oldMark)}`);
 
             api.editMark(editedMark.key, editedMark.value)
                 .then(response => console.log(response))

@@ -10,8 +10,6 @@ import com.sdv.kit.server.repository.MarkRepository;
 import com.sdv.kit.server.service.MarkService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,19 +28,16 @@ public class MarkServiceImpl implements MarkService {
     private final MarkRepository markRepository;
 
     @Async
-    @Cacheable(value = "marks")
     @Transactional
     @Override
     public CompletableFuture<MarkDto> save(MarkCreationDto markCreationDto) {
         final Mark mark = MARK_MAPPER.toEntity(markCreationDto);
         mark.setMarkType(MarkType.fromIndex(markCreationDto.markType()));
-
         final MarkDto savedMarkDto = MARK_MAPPER.toDto(markRepository.save(mark));
         return CompletableFuture.completedFuture(savedMarkDto);
     }
 
     @Async
-    @CachePut(value = "marks")
     @Transactional
     @Override
     public CompletableFuture<MarkDto> edit(Long markId, MarkEditDto markEditDto, String username) {
