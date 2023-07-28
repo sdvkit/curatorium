@@ -41,10 +41,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @SneakyThrows
     @Override
     public UserDetails loadUserByUsername(String username) {
-        final String usernameNotFoundExceptionMessage = String.format("There's no such User with username %s", username);
         return userRepository.findByUsername(username)
                 .map(com.sdv.kit.server.model.UserDetails::new)
-                .orElseThrow(() -> new UsernameNotFoundException(usernameNotFoundExceptionMessage));
+                .orElseThrow(() -> new UsernameNotFoundException("There's no such User with this username"));
     }
 
     @Async
@@ -89,5 +88,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("There's no user with this username"));
 
         return CompletableFuture.completedFuture(userDto);
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void logoutUser(String username) {
+        userRepository.logoutUser(username);
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void loginUser(String username) {
+        userRepository.loginUser(username);
     }
 }

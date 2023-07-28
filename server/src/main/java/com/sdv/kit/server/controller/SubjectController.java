@@ -66,11 +66,11 @@ public class SubjectController {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
+        subjectService.rename(subjectId, subjectRenameDto, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(subjectService
-                        .rename(subjectId, subjectRenameDto, authentication.getName())
-                        .get());
+                .build();
     }
 
     @DeleteMapping("/{subjectId}")

@@ -13,7 +13,7 @@ public interface SubjectService {
 
     CompletableFuture<List<SubjectDto>> findAllByUser(String username);
 
-    CompletableFuture<SubjectDto> rename(Long subjectId, SubjectRenameDto subjectRenameDto, String username);
+    void rename(Long subjectId, SubjectRenameDto subjectRenameDto, String username);
 
-    void delete(Long subjectId, String name);
+    void delete(Long subjectId, String username);
 }

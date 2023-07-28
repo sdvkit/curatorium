@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -36,6 +37,12 @@ public class AuthController {
     @PostMapping("/login")
     @SneakyThrows
     public ResponseEntity<Jwt> login(@RequestBody UserLoginDto userLoginDto) {
+        final UserDto userInfoDto = userService.getUserInfo(userLoginDto.username()).get();
+
+        if (userInfoDto.isLoggedIn()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User with this username is online");
+        }
+
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLoginDto.username(), userLoginDto.password()));
 
@@ -43,8 +50,9 @@ public class AuthController {
             throw new UsernameNotFoundException("There's no user with this username");
         }
 
-        final UserDto userInfoDto = userService.getUserInfo(userLoginDto.username()).get();
+        userService.loginUser(userInfoDto.username());
         final String tokenValue = jwtService.generateToken(userInfoDto);
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new Jwt(tokenValue));
@@ -63,5 +71,14 @@ public class AuthController {
                 .body(userService
                         .register(userRegistrationDto)
                         .get());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<HttpStatus> logoutUser(Authentication authentication) {
+        userService.logoutUser(authentication.getName());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
     }
 }

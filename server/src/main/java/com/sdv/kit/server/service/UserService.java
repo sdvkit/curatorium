@@ -13,4 +13,8 @@ public interface UserService {
     CompletableFuture<UserDto> rename(String username, UserRenameDto userRenameDto);
 
     CompletableFuture<UserDto> getUserInfo(String username);
+
+    void logoutUser(String username);
+
+    void loginUser(String username);
 }

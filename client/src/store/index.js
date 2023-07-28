@@ -105,6 +105,14 @@ const store = createStore({
                     state.subjectsMenuItems.pop()
                 })
         },
+        RENAME_SUBJECT(state, payload) {
+            const subject = payload[0]
+            const newSubjectName = payload[1]
+
+            api.renameSubject(subject.key, newSubjectName)
+                .then(() => subject.label = newSubjectName)
+                .catch(err => console.log(err))
+        },
         DELETE_SUBJECT(state, payload) {
             const subject = payload[0]
             let result = payload[1]

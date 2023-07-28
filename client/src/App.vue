@@ -760,7 +760,7 @@ export default {
                 header: 'Подтверждение переименования',
                 icon: 'pi pi-info-circle',
                 accept: () => {
-                    this.selectedSubject.label = this.newSubjectName
+                    this.$store.commit('RENAME_SUBJECT', [this.selectedSubject, this.newSubjectName])
                     this.isRenameSubjectDialogVisible = false
                     this.$toast.add({ severity: 'info', summary: 'Изменено', detail: `Предмет \"${this.newSubjectName}\" переименован`, life: 3000 })
                     this.newSubjectName = ''

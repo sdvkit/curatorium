@@ -69,14 +69,8 @@ public class SubjectServiceImpl implements SubjectService {
     @CachePut(value = "subjects")
     @Transactional
     @Override
-    public CompletableFuture<SubjectDto> rename(Long subjectId, SubjectRenameDto subjectRenameDto, String username) {
-        final Subject subject = subjectRepository.findById(subjectId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        subject.setName(subjectRenameDto.name());
-
-        final SubjectDto renamedSubjectDto = SUBJECT_MAPPER.toDto(subjectRepository.save(subject));
-        return CompletableFuture.completedFuture(renamedSubjectDto);
+    public void rename(Long subjectId, SubjectRenameDto subjectRenameDto, String username) {
+        subjectRepository.renameSubject(subjectId, subjectRenameDto.name(), username);
     }
 
     @Async

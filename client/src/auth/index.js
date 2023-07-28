@@ -2,6 +2,7 @@ import Cookies from "js-cookie"
 import router from "../router"
 import jwt from "../jwt"
 import store from "../store"
+import api from "../api"
 
 const auth = {
     get isAuthenticated() {
@@ -14,8 +15,11 @@ const auth = {
         router.push({ path: '/' })
     },
     logout() {
-        Cookies.remove('jwt')
-        router.push({ path: '/login' })
+        api.logoutUser()
+            .then(() => {
+                Cookies.remove('jwt')
+                router.push({ path: '/login' })
+            })
     }
 }
 

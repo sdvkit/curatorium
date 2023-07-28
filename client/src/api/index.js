@@ -165,6 +165,14 @@ const api = {
             data: { name: subjectName }
         })
     },
+    async renameSubject(subjectId, newSubjectName) {
+        return await axios({
+            method: 'patch',
+            url: `${this.baseUrl}/subjects/${subjectId}`,
+            headers: { 'Authorization': `Bearer ${jwt.getInMemoryToken}` },
+            data: { name: newSubjectName }
+        })
+    },
     async deleteSubject(subjectId) {
         await axios({
             method: 'delete',
@@ -263,6 +271,13 @@ const api = {
             url: `${this.baseUrl}/marks/${markId}`,
             headers: { 'Authorization': `Bearer ${jwt.getInMemoryToken}` },
             data: { value: newValue }
+        })
+    },
+    async logoutUser() {
+        return await axios({
+            method: 'post',
+            url: `${this.baseUrl}/auth/logout`,
+            headers: { 'Authorization': `Bearer ${jwt.getInMemoryToken}` }
         })
     }
 }
