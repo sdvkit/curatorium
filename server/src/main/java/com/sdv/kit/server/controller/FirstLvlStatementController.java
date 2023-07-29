@@ -56,11 +56,11 @@ public class FirstLvlStatementController {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
+        firstLvlStatementService.rename(firstLvlStatementId, flsRenameDto, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(firstLvlStatementService
-                        .rename(firstLvlStatementId, flsRenameDto, authentication.getName())
-                        .get());
+                .build();
     }
 
     @GetMapping

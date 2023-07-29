@@ -72,14 +72,8 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     @CachePut(value = "groups")
     @Override
-    public CompletableFuture<GroupDto> rename(Long groupId, GroupRenameDto groupRenameDto, String username) {
-        final Group group = groupRepository.findByIdAndUser(groupId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        group.setName(groupRenameDto.name());
-
-        final GroupDto renamedGroupDto = GROUP_MAPPER.toDto(groupRepository.save(group));
-        return CompletableFuture.completedFuture(renamedGroupDto);
+    public void rename(Long groupId, GroupRenameDto groupRenameDto, String username) {
+        groupRepository.renameGroup(groupId, groupRenameDto.name(), username);
     }
 
     @Async
@@ -97,14 +91,7 @@ public class GroupServiceImpl implements GroupService {
     @Transactional
     @CachePut(value = "groups")
     @Override
-    public CompletableFuture<GroupDto> archive(Long groupId, String username) {
-        final Group group = groupRepository.findByIdAndUser(groupId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        final boolean isArchived = group.getIsArchived();
-        group.setIsArchived(!isArchived);
-
-        final GroupDto archivedGroupDto = GROUP_MAPPER.toDto(groupRepository.save(group));
-        return CompletableFuture.completedFuture(archivedGroupDto);
+    public void archive(Long groupId, String username) {
+        groupRepository.archiveGroup(groupId, username);
     }
 }

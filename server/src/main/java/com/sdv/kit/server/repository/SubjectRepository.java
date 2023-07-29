@@ -25,7 +25,7 @@ public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Transactional
     @Query(value = "update subjects " +
             "set name = :newSubjectName " +
-            "from users u " +
-            "where u.username = :username and subjects.id = :id", nativeQuery = true)
+            "from users " +
+            "where users.username = :username and subjects.id = :id", nativeQuery = true)
     void renameSubject(Long id, String newSubjectName, String username);
 }

@@ -11,7 +11,7 @@ public interface FirstLvlStatementService {
 
     CompletableFuture<FirstLvlStatementDto> save(FirstLvlStatementCreationDto flsCreationDto, String username);
 
-    CompletableFuture<FirstLvlStatementDto> rename(Long firstLvlStatementId, FirstLvlStatementRenameDto flsRenameDto, String username);
+    void rename(Long firstLvlStatementId, FirstLvlStatementRenameDto flsRenameDto, String username);
 
     CompletableFuture<List<FirstLvlStatementDto>> findAllByUser(String username);
 

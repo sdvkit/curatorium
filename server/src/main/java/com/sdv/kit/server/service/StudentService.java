@@ -12,5 +12,5 @@ public interface StudentService {
 
     void delete(Long studentId, String username);
 
-    CompletableFuture<StudentDto> rename(Long studentId, StudentRenameDto studentRenameDto, String username);
+    void rename(Long studentId, StudentRenameDto studentRenameDto, String username);
 }

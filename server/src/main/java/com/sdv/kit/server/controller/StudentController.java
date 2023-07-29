@@ -52,7 +52,7 @@ public class StudentController {
 
     @PatchMapping("/{studentId}")
     @SneakyThrows
-    public ResponseEntity<StudentDto> renameStudent(@PathVariable Long studentId,
+    public ResponseEntity<HttpStatus> renameStudent(@PathVariable Long studentId,
                                                     @RequestBody @Valid StudentRenameDto studentRenameDto,
                                                     BindingResult bindingResult,
                                                     Authentication authentication) {
@@ -60,10 +60,10 @@ public class StudentController {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
+        studentService.rename(studentId, studentRenameDto, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(studentService
-                        .rename(studentId, studentRenameDto, authentication.getName())
-                        .get());
+                .build();
     }
 }

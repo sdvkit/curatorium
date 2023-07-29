@@ -13,9 +13,9 @@ public interface GroupService {
 
     CompletableFuture<GroupDto> save(GroupCreationDto groupCreationDto, String username);
 
-    CompletableFuture<GroupDto> rename(Long groupId, GroupRenameDto groupRenameDto, String username);
+    void rename(Long groupId, GroupRenameDto groupRenameDto, String username);
 
     void delete(Long groupId, String username);
 
-    CompletableFuture<GroupDto> archive(Long groupId, String username);
+    void archive(Long groupId, String username);
 }

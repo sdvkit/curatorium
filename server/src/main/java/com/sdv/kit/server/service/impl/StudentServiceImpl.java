@@ -12,11 +12,9 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -44,24 +42,15 @@ public class StudentServiceImpl implements StudentService {
     @CacheEvict(value = "students")
     @Override
     public void delete(Long studentId, String username) {
-        final Student student = studentRepository.findByIdAndUser(studentId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        studentRepository.delete(student);
+        studentRepository.deleteByIdAndUser(studentId, username);
     }
 
     @Async
     @Transactional
     @CachePut(value = "students")
     @Override
-    public CompletableFuture<StudentDto> rename(Long studentId, StudentRenameDto studentRenameDto, String username) {
-        final Student student = studentRepository.findByIdAndUser(studentId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        student.setName(studentRenameDto.name());
-
-        final StudentDto renamedStudentDto = STUDENT_MAPPER.toDto(studentRepository.save(student));
-        return CompletableFuture.completedFuture(renamedStudentDto);
+    public void rename(Long studentId, StudentRenameDto studentRenameDto, String username) {
+        studentRepository.renameStudent(studentId, studentRenameDto.name(), username);
     }
 
 }

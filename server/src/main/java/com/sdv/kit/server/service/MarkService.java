@@ -10,5 +10,5 @@ public interface MarkService {
 
     CompletableFuture<MarkDto> save(MarkCreationDto markCreationDto);
 
-    CompletableFuture<MarkDto> edit(Long markId, MarkEditDto markEditDto, String username);
+    void edit(Long markId, MarkEditDto markEditDto, String username);
 }

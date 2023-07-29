@@ -66,11 +66,11 @@ public class GroupController {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
+        groupService.rename(groupId, groupRenameDto, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(groupService
-                        .rename(groupId, groupRenameDto, authentication.getName())
-                        .get());
+                .build();
     }
 
     @DeleteMapping("/{groupId}")
@@ -84,10 +84,11 @@ public class GroupController {
     @SneakyThrows
     public ResponseEntity<GroupDto> archiveGroup(@PathVariable Long groupId,
                                                    Authentication authentication) {
+
+        groupService.archive(groupId, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(groupService
-                        .archive(groupId, authentication.getName())
-                        .get());
+                .build();
     }
 }

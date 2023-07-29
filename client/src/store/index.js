@@ -315,7 +315,6 @@ const store = createStore({
             const oldMark = payload[1]
 
             api.editMark(editedMark.key, editedMark.value)
-                .then(response => console.log(response))
                 .catch(err => {
                     editedMark.value = oldMark.value
                     console.log(err)

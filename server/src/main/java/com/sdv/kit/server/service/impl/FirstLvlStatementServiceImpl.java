@@ -72,14 +72,8 @@ public class FirstLvlStatementServiceImpl implements FirstLvlStatementService {
     @CachePut(value = "fls")
     @Transactional
     @Override
-    public CompletableFuture<FirstLvlStatementDto> rename(Long firstLvlStatementId, FirstLvlStatementRenameDto flsRenameDto, String username) {
-        final FirstLvlStatement firstLvlStatement = firstLvlStatementRepository.findByIdAndUser(firstLvlStatementId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        firstLvlStatement.setName(flsRenameDto.name());
-
-        final FirstLvlStatementDto renamedFlsDto = FLS_MAPPER.toDto(firstLvlStatementRepository.save(firstLvlStatement));
-        return CompletableFuture.completedFuture(renamedFlsDto);
+    public void rename(Long firstLvlStatementId, FirstLvlStatementRenameDto flsRenameDto, String username) {
+        firstLvlStatementRepository.renameStatement(firstLvlStatementId, flsRenameDto.name(), username);
     }
 
     @Async

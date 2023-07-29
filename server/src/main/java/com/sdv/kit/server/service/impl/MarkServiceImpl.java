@@ -10,11 +10,9 @@ import com.sdv.kit.server.repository.MarkRepository;
 import com.sdv.kit.server.service.MarkService;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
-import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -32,7 +30,9 @@ public class MarkServiceImpl implements MarkService {
     @Override
     public CompletableFuture<MarkDto> save(MarkCreationDto markCreationDto) {
         final Mark mark = MARK_MAPPER.toEntity(markCreationDto);
+
         mark.setMarkType(MarkType.fromIndex(markCreationDto.markType()));
+
         final MarkDto savedMarkDto = MARK_MAPPER.toDto(markRepository.save(mark));
         return CompletableFuture.completedFuture(savedMarkDto);
     }
@@ -40,13 +40,7 @@ public class MarkServiceImpl implements MarkService {
     @Async
     @Transactional
     @Override
-    public CompletableFuture<MarkDto> edit(Long markId, MarkEditDto markEditDto, String username) {
-        final Mark mark = markRepository.findByIdAndUser(markId, username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        mark.setValue(markEditDto.value());
-
-        final MarkDto editedMarkDto = MARK_MAPPER.toDto(markRepository.save(mark));
-        return CompletableFuture.completedFuture(editedMarkDto);
+    public void edit(Long markId, MarkEditDto markEditDto, String username) {
+        markRepository.editMark(markId, markEditDto.value(), username);
     }
 }

@@ -51,10 +51,10 @@ public class MarkController {
             return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
         }
 
+        markService.edit(markId, markEditDto, authentication.getName());
+
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(markService
-                        .edit(markId, markEditDto, authentication.getName())
-                        .get());
+                .build();
     }
 }
