@@ -1,6 +1,14 @@
 <template>
     <Dialog :breakpoints="{ '960px': '75vw', '641px': '100vw' }" modal maximizable :style="{ width: '75vw' }" 
-        :header="(params.subject !== null) ? params.subject.label : '' " :contentStyle="{ minHeight: '580px' }">
+        :header="(params.subject !== null) ? params.subject.label : '' " :contentStyle="{ minHeight: '580px' }">        
+        
+        <Dialog v-model:visible="isListeningInfoDialogVisible" header="Начат голосовой ввод отметок" :style="{ width: '50vw' }">
+            <p>
+                Считывание голосового ввода начнется через несколько секунд. 
+                Постарайтесь точнее выговаривать отметки для получения корректного результата.
+            </p>
+        </Dialog>
+        
         <DataTable :value="params.students" editMode="cell" tableClass="editable-cells-table"
             v-on:cell-edit-complete="onCellEditComplete"
             contextMenu showGridlines scrollable scrollHeight="560px" responsiveLayout="stack" breakpoint="960px">
@@ -11,7 +19,11 @@
                     <Column :colspan="getMaxMarksCount">
                         <template #header>
                             <span>Отметки</span>
-                            <Button icon="pi pi-plus" text @click="toggleAddMarkMenu" :style="{ position: 'absolute', right: '5px' }" aria-haspopup="true" aria-controls="overlay_menu" />
+                            <Button v-tooltip="'Добавить отметку'" icon="pi pi-plus" text @click="toggleAddMarkMenu" :style="{ position: 'absolute', right: '5px' }" aria-haspopup="true" aria-controls="overlay_menu" />
+                            <ToggleButton v-tooltip="'Голосовой ввод'" v-model="isListening" 
+                                onIcon="bx bx-microphone" offIcon="bx bx-microphone-off" onLabel="" offLabel="" @click="doVoiceInput" 
+                                :style="{ position: 'absolute', right: '40px', border: '0', }">
+                            </ToggleButton>
                             <Menu ref="menu" id="overlay_menu" :model="addMarkItems" :popup="true" :style="{ width: '200px' }">
                                 <template #itemicon="slotProps">
                                     <Tag v-if="slotProps.item.key === 0" value="" :style="{ width: '15px', height: '15px', marginRight: '10px', borderRadius: '180px', background: 'none' }" />
@@ -43,7 +55,7 @@
                     </div>
                 </template>
                 <template #editor="slotProps">
-                    <InputNumber :oninput="onInputMark(slotProps)" v-model="slotProps.data[`mark_${index + 1}`].value" autofocus inputId="integeronly" />
+                    <InputNumber class="inp-num" :oninput="onInputMark(slotProps)" v-model="slotProps.data[`mark_${index + 1}`].value" autofocus inputId="integeronly" />
                 </template>
             </Column>
 
@@ -68,12 +80,43 @@ import InputNumber from 'primevue/inputnumber'
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import Tag from 'primevue/tag'
+import ToggleButton from 'primevue/togglebutton'
+import wordToNumberMapper from '../util/wordToNumberMapper'
+import recognizer from '../recognizer'
 
 export default {
+    mounted() {
+        recognizer.initialize()
+        recognizer.onResult((event) => {
+            const recognizedText = event.results[event.resultIndex][0].transcript
+            const inputNumber = document.querySelector('input#integeronly.p-inputtext.p-component.p-inputnumber-input')
+
+            const tabPressEvent = new KeyboardEvent('keydown', {
+                key: 'Tab',
+                code: 'Tab',
+                keyCode: 9,
+                which: 9,
+                shiftKey: false,
+                bubbles: true
+            });
+
+            if (!isNaN(recognizedText) && wordToNumberMapper.isNumber(parseInt(recognizedText))) {
+                inputNumber.value = recognizedText
+                inputNumber.dispatchEvent(tabPressEvent)
+                return
+            }
+
+            const recognizedNumber = wordToNumberMapper.parse(recognizedText)
+            inputNumber.value = `${recognizedNumber}`
+            inpNum.dispatchEvent(tabPressEvent)
+        })
+    },
     name: 'second-lvl-statement-dialog',
     props: ['params'],
     data() {
         return {
+            isListeningInfoDialogVisible: false,
+            isListening: false,
             addMarkItems: [
                 {
                     key: 0,
@@ -112,6 +155,15 @@ export default {
         },
     },
     methods: {
+        doVoiceInput() {
+            if (!recognizer.isListening) {
+                this.isListeningInfoDialogVisible = true
+                recognizer.startRecognition()
+            } else {
+                this.isListeningInfoDialogVisible = false
+                recognizer.stopRecognition()
+            }
+        },
         onInputMark(slotProps) {
             if (this.isInputProcess) {
                 this.oldMarks = []
@@ -145,7 +197,6 @@ export default {
             const student = originalStudents.find(originalStudent => originalStudent.label === data.label)
             const subject = this.getSubjects.find(subject => subject.key === this.params.subjectKey)
             const statement = this.params.firstLvlStatement.secondLvlStatements.find(firstLvlStatement => firstLvlStatement.subject.key === subject.key)
-
 
             const mark = { secondLvlStatementKey: statement.key, value: 0, typeId: 0 }
             data[field] = mark
@@ -225,7 +276,8 @@ export default {
         InputNumber,
         Button,
         Menu,
-        Tag
+        Tag,
+        ToggleButton
     }
 }
 </script>

@@ -211,7 +211,6 @@ const store = createStore({
 
             api.saveFirstLvlStatement(statementName, statementSubjects, statementGroup)
                 .then(response => {
-                    console.log(response);
                     const entity = {
                         key: response.data.id,
                         label: statementName,
